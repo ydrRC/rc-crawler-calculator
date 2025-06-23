@@ -19,7 +19,7 @@
                      class="brand-logo"
                      onerror="this.style.display='none'">
                 <div class="header-text">
-                    <h1><span class="ydrrc-text"></span> Crawler Calculator</h1>
+                    <h1>Crawler Gear Ratio Calculator</h1>
                     <p>Calculate gear ratios and theoretical speeds for your RC crawler</p>
                 </div>
             </div>
@@ -135,6 +135,11 @@
                     <div class="value" id="rearRatio">-</div>
                 </div>
                 
+                <div class="result-item clickable" onclick="copyToClipboard(this)" title="Click to copy">
+                    <h3>Overdrive Percentage</h3>
+                    <div class="value" id="overdrivePercentage">-</div>
+                </div>
+                
                 <div class="speed-results">
                     <div class="result-item clickable" onclick="copyToClipboard(this)" title="Click to copy">
                         <h3>Approx. Front Speed</h3>
@@ -179,15 +184,556 @@
                  alt="ydrRC Logo" 
                  class="footer-logo"
                  onerror="this.style.display='none'">
-            <p>&copy; 2025 <span class="ydrrc-text"></span> Crawler Calculator. Built for the RC crawling community.</p>
+            <p>&copy; 2025 <span class="ydrrc-text"></span> Crawler Calculator. Licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" style="color: white; text-decoration: underline;">CC BY-NC-SA 4.0</a></p>
         </footer>
     </div>
 
     <!-- JavaScript Files -->
     <script src="js/data.js"></script>
-    <script src="js/calculator.js"></script>
-    <script src="js/ui.js"></script>
-    
+    <script>
+        /**
+         * RC Crawler Calculator - Calculation Engine
+         * Handles all gear ratio and speed calculations
+         */
+
+        class CrawlerCalculator {
+            constructor() {
+                this.results = {
+                    motorRatio: 0,
+                    finalFrontRatio: 0,
+                    finalRearRatio: 0,
+                    frontSpeed: 0,
+                    rearSpeed: 0,
+                    overdrivePercentage: 0
+                };
+            }
+
+            /**
+             * Calculate motor gear ratio
+             * @param {number} spurTeeth - Number of spur gear teeth
+             * @param {number} pinionTeeth - Number of pinion gear teeth
+             * @returns {number} Motor gear ratio
+             */
+            calculateMotorRatio(spurTeeth, pinionTeeth) {
+                if (!spurTeeth || !pinionTeeth || pinionTeeth === 0) {
+                    return 0;
+                }
+                return spurTeeth / pinionTeeth;
+            }
+
+            /**
+             * Calculate overdrive percentage using percent difference formula
+             * @param {number} frontRatio - Front axle final ratio
+             * @param {number} rearRatio - Rear axle final ratio
+             * @returns {number} Overdrive percentage
+             */
+            calculateOverdrivePercentage(frontRatio, rearRatio) {
+                console.log('Calculating overdrive:', { frontRatio, rearRatio });
+                
+                if (!frontRatio || !rearRatio || frontRatio === 0 || rearRatio === 0) {
+                    console.log('Invalid ratios for overdrive calculation');
+                    return 0;
+                }
+                
+                // Percent difference formula: ((rear - front) / average) * 100
+                // where average = (rear + front) / 2
+                const average = (rearRatio + frontRatio) / 2;
+                const result = ((rearRatio - frontRatio) / average) * 100;
+                
+                console.log('Overdrive calculation result:', result);
+                return result;
+            }
+
+            /**
+             * Calculate final drive ratios
+             * @param {Object} params - Calculation parameters
+             */
+            calculateRatios(params) {
+                const {
+                    spurTeeth,
+                    pinionTeeth,
+                    transmissionName,
+                    frontAxleName,
+                    rearAxleName,
+                    reverseTransmission = false
+                } = params;
+
+                // Calculate motor ratio
+                const motorRatio = this.calculateMotorRatio(spurTeeth, pinionTeeth);
+                this.results.motorRatio = motorRatio;
+
+                // Get transmission and axle data
+                const transmission = getTransmission(transmissionName);
+                const frontAxleRatio = getAxle(frontAxleName);
+                const rearAxleRatio = getAxle(rearAxleName);
+
+                if (!transmission || frontAxleRatio === null || rearAxleRatio === null) {
+                    this.results.finalFrontRatio = 0;
+                    this.results.finalRearRatio = 0;
+                    this.results.overdrivePercentage = 0;
+                    return this.results;
+                }
+
+                // Apply reverse transmission logic
+                const frontTransRatio = reverseTransmission ? transmission.rear : transmission.front;
+                const rearTransRatio = reverseTransmission ? transmission.front : transmission.rear;
+
+                // Calculate final ratios
+                this.results.finalFrontRatio = motorRatio * frontTransRatio * frontAxleRatio;
+                this.results.finalRearRatio = motorRatio * rearTransRatio * rearAxleRatio;
+
+                // Calculate overdrive percentage
+                this.results.overdrivePercentage = this.calculateOverdrivePercentage(
+                    this.results.finalFrontRatio, 
+                    this.results.finalRearRatio
+                );
+
+                return this.results;
+            }
+
+            /**
+             * Calculate theoretical speeds
+             */
+            calculateSpeeds(params) {
+                const {
+                    motorKV,
+                    maxVoltage,
+                    tireSize,
+                    tireSizeUnit = 'inches'
+                } = params;
+
+                // Validate inputs
+                if (!motorKV || !maxVoltage || !tireSize || 
+                    !this.results.finalFrontRatio || !this.results.finalRearRatio) {
+                    this.results.frontSpeed = 0;
+                    this.results.rearSpeed = 0;
+                    return this.results;
+                }
+
+                // Convert tire size to inches if needed
+                const tireSizeInches = tireSizeUnit === 'mm' ? tireSize / 25.4 : tireSize;
+                const tireCircumference = Math.PI * tireSizeInches;
+
+                // Calculate motor RPM
+                const motorRPM = motorKV * maxVoltage;
+
+                // Calculate wheel RPM
+                const frontWheelRPM = motorRPM / this.results.finalFrontRatio;
+                const rearWheelRPM = motorRPM / this.results.finalRearRatio;
+
+                // Calculate speeds in MPH
+                const frontSpeedMPH = (frontWheelRPM * tireCircumference * 60) / (12 * 5280);
+                const rearSpeedMPH = (rearWheelRPM * tireCircumference * 60) / (12 * 5280);
+
+                this.results.frontSpeed = frontSpeedMPH;
+                this.results.rearSpeed = rearSpeedMPH;
+
+                return this.results;
+            }
+
+            /**
+             * Calculate all parameters at once
+             */
+            calculateAll(params) {
+                this.calculateRatios(params);
+                this.calculateSpeeds(params);
+                return this.results;
+            }
+
+            /**
+             * Get formatted results for display
+             */
+            getFormattedResults() {
+                return {
+                    motorRatio: this.formatRatio(this.results.motorRatio),
+                    finalFrontRatio: this.formatRatio(this.results.finalFrontRatio),
+                    finalRearRatio: this.formatRatio(this.results.finalRearRatio),
+                    frontSpeed: this.formatSpeed(this.results.frontSpeed),
+                    rearSpeed: this.formatSpeed(this.results.rearSpeed),
+                    overdrivePercentage: this.formatPercentage(this.results.overdrivePercentage)
+                };
+            }
+
+            formatRatio(ratio) {
+                if (!ratio || ratio === 0) return '-';
+                return `${ratio.toFixed(3)}:1`;
+            }
+
+            formatSpeed(speed) {
+                if (!speed || speed === 0) return '-';
+                return `${speed.toFixed(2)} MPH`;
+            }
+
+            formatPercentage(percentage) {
+                console.log('Formatting percentage:', percentage);
+                if (percentage === null || percentage === undefined || !isFinite(percentage)) return '-';
+                const sign = percentage > 0 ? '+' : '';
+                const result = `${sign}${percentage.toFixed(1)}%`;
+                console.log('Formatted percentage result:', result);
+                return result;
+            }
+        }
+
+        // Create global calculator instance
+        const calculator = new CrawlerCalculator();
+        
+        function calculate() {
+            console.log('Using UPDATED calculate function with overdrive support!');
+            try {
+                const params = {
+                    spurTeeth: parseFloat(document.getElementById('spur').value) || 0,
+                    pinionTeeth: parseFloat(document.getElementById('pinion').value) || 0,
+                    transmissionName: document.getElementById('transmission').value,
+                    frontAxleName: document.getElementById('frontAxle').value,
+                    rearAxleName: document.getElementById('rearAxle').value,
+                    reverseTransmission: document.getElementById('reverseTransmission').checked,
+                    motorKV: parseFloat(document.getElementById('motorKV').value) || 0,
+                    maxVoltage: parseFloat(document.getElementById('maxVoltage').value) || 0,
+                    tireSize: parseFloat(document.getElementById('tireSize').value) || 0,
+                    tireSizeUnit: document.getElementById('tireSizeUnit').value
+                };
+                
+                const results = calculator.calculateAll(params);
+                const formatted = calculator.getFormattedResults();
+                
+                console.log('Calculator results:', results);
+                console.log('Formatted results:', formatted);
+                
+                // Get individual component ratios
+                const transmission = getTransmission(params.transmissionName);
+                const frontAxleRatio = getAxle(params.frontAxleName);
+                const rearAxleRatio = getAxle(params.rearAxleName);
+                
+                // Update all result displays
+                const motorRatioEl = document.getElementById('motorRatio');
+                const transmissionRatioEl = document.getElementById('transmissionRatio');
+                const frontAxleRatioEl = document.getElementById('frontAxleRatio');
+                const rearAxleRatioEl = document.getElementById('rearAxleRatio');
+                const frontRatioEl = document.getElementById('frontRatio');
+                const rearRatioEl = document.getElementById('rearRatio');
+                const overdrivePercentageEl = document.getElementById('overdrivePercentage');
+                const frontSpeedEl = document.getElementById('frontSpeed');
+                const rearSpeedEl = document.getElementById('rearSpeed');
+                
+                if (motorRatioEl) motorRatioEl.textContent = formatted.motorRatio;
+                
+                // Display transmission ratios
+                if (transmissionRatioEl && transmission) {
+                    const frontTransRatio = params.reverseTransmission ? transmission.rear : transmission.front;
+                    const rearTransRatio = params.reverseTransmission ? transmission.front : transmission.rear;
+                    
+                    if (frontTransRatio === rearTransRatio) {
+                        transmissionRatioEl.textContent = `${frontTransRatio.toFixed(3)}:1`;
+                    } else {
+                        transmissionRatioEl.textContent = `F:${frontTransRatio.toFixed(3)} R:${rearTransRatio.toFixed(3)}`;
+                    }
+                } else if (transmissionRatioEl) {
+                    transmissionRatioEl.textContent = '-';
+                }
+                
+                // Display axle ratios
+                if (frontAxleRatioEl) {
+                    frontAxleRatioEl.textContent = frontAxleRatio ? `${frontAxleRatio.toFixed(3)}:1` : '-';
+                }
+                if (rearAxleRatioEl) {
+                    rearAxleRatioEl.textContent = rearAxleRatio ? `${rearAxleRatio.toFixed(3)}:1` : '-';
+                }
+                
+                // Display final ratios and speeds
+                if (frontRatioEl) frontRatioEl.textContent = formatted.finalFrontRatio;
+                if (rearRatioEl) rearRatioEl.textContent = formatted.finalRearRatio;
+                if (overdrivePercentageEl) {
+                    console.log('Setting overdrive element to:', formatted.overdrivePercentage);
+                    overdrivePercentageEl.textContent = formatted.overdrivePercentage;
+                    console.log('Overdrive element content after setting:', overdrivePercentageEl.textContent);
+                } else {
+                    console.log('ERROR: Overdrive element not found! Looking for id="overdrivePercentage"');
+                }
+                if (frontSpeedEl) frontSpeedEl.textContent = formatted.frontSpeed;
+                if (rearSpeedEl) rearSpeedEl.textContent = formatted.rearSpeed;
+                
+            } catch (error) {
+                console.error('Calculation error:', error);
+            }
+        }
+
+        let debounceTimer = null;
+        function debounceCalculate() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(calculate, 300);
+        }
+
+        // Wait for DOM to be ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, starting initialization...');
+            
+            // Populate dropdowns
+            populateTransmissions();
+            populateAxles();
+            
+            // Add event listeners
+            addEventListeners();
+            
+            // Set defaults after dropdowns are populated
+            setDefaults();
+            
+            // Initial calculation
+            calculate();
+            
+            console.log('Initialization complete');
+        });
+
+        function populateTransmissions() {
+            const select = document.getElementById('transmission');
+            if (!select) {
+                console.error('Transmission select not found');
+                return;
+            }
+            
+            console.log('Populating transmissions...');
+            const transmissions = getTransmissionNames();
+            
+            transmissions.forEach(transmission => {
+                const option = document.createElement('option');
+                option.value = transmission;
+                option.textContent = transmission;
+                select.appendChild(option);
+            });
+            
+            console.log(`Added ${transmissions.length} transmissions`);
+        }
+
+        function populateAxles() {
+            const frontSelect = document.getElementById('frontAxle');
+            const rearSelect = document.getElementById('rearAxle');
+            
+            if (!frontSelect || !rearSelect) {
+                console.error('Axle selects not found');
+                return;
+            }
+            
+            console.log('Populating axles...');
+            const axles = getAxleNames();
+            
+            axles.forEach(axle => {
+                const frontOption = document.createElement('option');
+                frontOption.value = axle;
+                frontOption.textContent = axle;
+                frontSelect.appendChild(frontOption);
+                
+                const rearOption = document.createElement('option');
+                rearOption.value = axle;
+                rearOption.textContent = axle;
+                rearSelect.appendChild(rearOption);
+            });
+            
+            console.log(`Added ${axles.length} axles`);
+        }
+
+        function setDefaults() {
+            console.log('Setting default values...');
+            
+            // Set default transmission
+            const transmissionEl = document.getElementById('transmission');
+            if (transmissionEl) {
+                transmissionEl.value = 'Axial 3-Gear';
+                console.log('Set default transmission: Axial 3-Gear');
+            }
+            
+            // Set default front axle
+            const frontAxleEl = document.getElementById('frontAxle');
+            if (frontAxleEl) {
+                frontAxleEl.value = 'AR44 / AR45 / SCX Pro / Element';
+                console.log('Set default front axle: AR44 / AR45 / SCX Pro / Element');
+            }
+            
+            // Set default rear axle
+            const rearAxleEl = document.getElementById('rearAxle');
+            if (rearAxleEl) {
+                rearAxleEl.value = 'AR44 / AR45 / SCX Pro / Element';
+                console.log('Set default rear axle: AR44 / AR45 / SCX Pro / Element');
+            }
+            
+            console.log('Default values set');
+        }
+
+        function addEventListeners() {
+            console.log('Adding event listeners...');
+            
+            // Basic inputs
+            const inputs = ['pinion', 'spur', 'transmission', 'frontAxle', 'rearAxle', 'reverseTransmission', 'motorKV', 'maxVoltage', 'tireSize', 'tireSizeUnit'];
+            
+            inputs.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('change', calculate);
+                    element.addEventListener('input', debounceCalculate);
+                    console.log(`Added listeners to ${id}`);
+                } else {
+                    console.warn(`Element ${id} not found`);
+                }
+            });
+            
+            // Special handler for transmission changes (spur gear auto-fill)
+            const transmissionEl = document.getElementById('transmission');
+            if (transmissionEl) {
+                transmissionEl.addEventListener('change', handleTransmissionChange);
+                console.log('Added transmission change handler');
+            }
+        }
+
+        function handleTransmissionChange() {
+            const transmissionEl = document.getElementById('transmission');
+            const spurEl = document.getElementById('spur');
+            
+            if (!transmissionEl || !spurEl) return;
+            
+            const transmissionName = transmissionEl.value;
+            console.log('Transmission changed to:', transmissionName);
+            
+            if (transmissionName && transmissionName.toLowerCase().includes('spur')) {
+                const spurCount = extractSpurGearCount(transmissionName);
+                console.log('Extracted spur count:', spurCount);
+                
+                if (spurCount) {
+                    spurEl.value = spurCount;
+                    spurEl.disabled = true;
+                    spurEl.style.backgroundColor = '#e9ecef';
+                    spurEl.style.cursor = 'not-allowed';
+                    
+                    // Update label to show it's auto-filled
+                    const spurLabel = document.querySelector('label[for="spur"]');
+                    if (spurLabel && !spurLabel.textContent.includes('(Auto)')) {
+                        spurLabel.textContent = spurLabel.textContent.replace(':', ' (Auto):');
+                    }
+                    
+                    console.log('Spur gear auto-set to:', spurCount);
+                }
+            } else {
+                // Re-enable spur input for non-spur transmissions
+                spurEl.disabled = false;
+                spurEl.style.backgroundColor = 'white';
+                spurEl.style.cursor = 'text';
+                
+                // Remove auto label
+                const spurLabel = document.querySelector('label[for="spur"]');
+                if (spurLabel && spurLabel.textContent.includes('(Auto)')) {
+                    spurLabel.textContent = spurLabel.textContent.replace(' (Auto)', '');
+                }
+                
+                console.log('Spur gear input re-enabled');
+            }
+            
+            // Trigger calculation after transmission change
+            calculate();
+        }
+
+        function extractSpurGearCount(transmissionName) {
+            // Look for pattern: number followed by parenthesis, followed by "spur" (case insensitive)
+            // Examples:
+            // "Axial Capra UTB18 40 (48) Spur" -> should extract 40
+            // "Dlux Cheez Berger 17% OD - 48(48) Spur" -> should extract 48
+            
+            const spurRegex = /(\d+)\s*\([^)]*\)\s*spur/i;
+            const match = transmissionName.match(spurRegex);
+            
+            if (match && match[1]) {
+                return parseInt(match[1], 10);
+            }
+            
+            // Fallback: look for number immediately before "spur" (without parenthesis)
+            const fallbackRegex = /(\d+)\s*spur/i;
+            const fallbackMatch = transmissionName.match(fallbackRegex);
+            
+            if (fallbackMatch && fallbackMatch[1]) {
+                return parseInt(fallbackMatch[1], 10);
+            }
+            
+            return null;
+        }
+        
+        
+        
+        function calculate() {
+            console.log('Using UPDATED calculate function with overdrive support!');
+            try {
+                const params = {
+                    spurTeeth: parseFloat(document.getElementById('spur').value) || 0,
+                    pinionTeeth: parseFloat(document.getElementById('pinion').value) || 0,
+                    transmissionName: document.getElementById('transmission').value,
+                    frontAxleName: document.getElementById('frontAxle').value,
+                    rearAxleName: document.getElementById('rearAxle').value,
+                    reverseTransmission: document.getElementById('reverseTransmission').checked,
+                    motorKV: parseFloat(document.getElementById('motorKV').value) || 0,
+                    maxVoltage: parseFloat(document.getElementById('maxVoltage').value) || 0,
+                    tireSize: parseFloat(document.getElementById('tireSize').value) || 0,
+                    tireSizeUnit: document.getElementById('tireSizeUnit').value
+                };
+                
+                const results = calculator.calculateAll(params);
+                const formatted = calculator.getFormattedResults();
+                
+                console.log('Calculator results:', results);
+                console.log('Formatted results:', formatted);
+                
+                // Get individual component ratios
+                const transmission = getTransmission(params.transmissionName);
+                const frontAxleRatio = getAxle(params.frontAxleName);
+                const rearAxleRatio = getAxle(params.rearAxleName);
+                
+                // Update all result displays
+                const motorRatioEl = document.getElementById('motorRatio');
+                const transmissionRatioEl = document.getElementById('transmissionRatio');
+                const frontAxleRatioEl = document.getElementById('frontAxleRatio');
+                const rearAxleRatioEl = document.getElementById('rearAxleRatio');
+                const frontRatioEl = document.getElementById('frontRatio');
+                const rearRatioEl = document.getElementById('rearRatio');
+                const overdrivePercentageEl = document.getElementById('overdrivePercentage');
+                const frontSpeedEl = document.getElementById('frontSpeed');
+                const rearSpeedEl = document.getElementById('rearSpeed');
+                
+                if (motorRatioEl) motorRatioEl.textContent = formatted.motorRatio;
+                
+                // Display transmission ratios
+                if (transmissionRatioEl && transmission) {
+                    const frontTransRatio = params.reverseTransmission ? transmission.rear : transmission.front;
+                    const rearTransRatio = params.reverseTransmission ? transmission.front : transmission.rear;
+                    
+                    if (frontTransRatio === rearTransRatio) {
+                        transmissionRatioEl.textContent = `${frontTransRatio.toFixed(3)}:1`;
+                    } else {
+                        transmissionRatioEl.textContent = `F:${frontTransRatio.toFixed(3)} R:${rearTransRatio.toFixed(3)}`;
+                    }
+                } else if (transmissionRatioEl) {
+                    transmissionRatioEl.textContent = '-';
+                }
+                
+                // Display axle ratios
+                if (frontAxleRatioEl) {
+                    frontAxleRatioEl.textContent = frontAxleRatio ? `${frontAxleRatio.toFixed(3)}:1` : '-';
+                }
+                if (rearAxleRatioEl) {
+                    rearAxleRatioEl.textContent = rearAxleRatio ? `${rearAxleRatio.toFixed(3)}:1` : '-';
+                }
+                
+                // Display final ratios and speeds
+                if (frontRatioEl) frontRatioEl.textContent = formatted.finalFrontRatio;
+                if (rearRatioEl) rearRatioEl.textContent = formatted.finalRearRatio;
+                if (overdrivePercentageEl) {
+                    console.log('Setting overdrive element to:', formatted.overdrivePercentage);
+                    overdrivePercentageEl.textContent = formatted.overdrivePercentage;
+                    console.log('Overdrive element content after setting:', overdrivePercentageEl.textContent);
+                } else {
+                    console.log('ERROR: Overdrive element not found! Looking for id="overdrivePercentage"');
+                }
+                if (frontSpeedEl) frontSpeedEl.textContent = formatted.frontSpeed;
+                if (rearSpeedEl) rearSpeedEl.textContent = formatted.rearSpeed;
+                
+            } catch (error) {
+                console.error('Calculation error:', error);
+            }
+        }
+    </script>
     <script>
         // Clipboard functionality for result items
         function copyToClipboard(element) {

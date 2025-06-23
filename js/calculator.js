@@ -10,7 +10,8 @@ class CrawlerCalculator {
             finalFrontRatio: 0,
             finalRearRatio: 0,
             frontSpeed: 0,
-            rearSpeed: 0
+            rearSpeed: 0,
+            overdrivePercentage: 0
         };
     }
 
@@ -25,6 +26,23 @@ class CrawlerCalculator {
             return 0;
         }
         return spurTeeth / pinionTeeth;
+    }
+
+    /**
+     * Calculate overdrive percentage using percent difference formula
+     * @param {number} frontRatio - Front axle final ratio
+     * @param {number} rearRatio - Rear axle final ratio
+     * @returns {number} Overdrive percentage
+     */
+    calculateOverdrivePercentage(frontRatio, rearRatio) {
+        if (!frontRatio || !rearRatio || frontRatio === 0 || rearRatio === 0) {
+            return 0;
+        }
+        
+        // Percent difference formula: ((rear - front) / average) * 100
+        // where average = (rear + front) / 2
+        const average = (rearRatio + frontRatio) / 2;
+        return ((rearRatio - frontRatio) / average) * 100;
     }
 
     /**
@@ -60,6 +78,7 @@ class CrawlerCalculator {
         if (!transmission || frontAxleRatio === null || rearAxleRatio === null) {
             this.results.finalFrontRatio = 0;
             this.results.finalRearRatio = 0;
+            this.results.overdrivePercentage = 0;
             return this.results;
         }
 
@@ -70,6 +89,12 @@ class CrawlerCalculator {
         // Calculate final ratios
         this.results.finalFrontRatio = motorRatio * frontTransRatio * frontAxleRatio;
         this.results.finalRearRatio = motorRatio * rearTransRatio * rearAxleRatio;
+
+        // Calculate overdrive percentage
+        this.results.overdrivePercentage = this.calculateOverdrivePercentage(
+            this.results.finalFrontRatio, 
+            this.results.finalRearRatio
+        );
 
         return this.results;
     }
@@ -146,7 +171,8 @@ class CrawlerCalculator {
             finalFrontRatio: this.formatRatio(this.results.finalFrontRatio),
             finalRearRatio: this.formatRatio(this.results.finalRearRatio),
             frontSpeed: this.formatSpeed(this.results.frontSpeed),
-            rearSpeed: this.formatSpeed(this.results.rearSpeed)
+            rearSpeed: this.formatSpeed(this.results.rearSpeed),
+            overdrivePercentage: this.formatPercentage(this.results.overdrivePercentage)
         };
     }
 
@@ -168,6 +194,17 @@ class CrawlerCalculator {
     formatSpeed(speed) {
         if (!speed || speed === 0) return '-';
         return `${speed.toFixed(2)} MPH`;
+    }
+
+    /**
+     * Format percentage for display
+     * @param {number} percentage - Percentage value
+     * @returns {string} Formatted percentage string
+     */
+    formatPercentage(percentage) {
+        if (percentage === 0 || !isFinite(percentage)) return '-';
+        const sign = percentage > 0 ? '+' : '';
+        return `${sign}${percentage.toFixed(1)}%`;
     }
 
     /**
@@ -251,7 +288,8 @@ class CrawlerCalculator {
                 finalFrontRatio: results2.finalFrontRatio - results1.finalFrontRatio,
                 finalRearRatio: results2.finalRearRatio - results1.finalRearRatio,
                 frontSpeed: results2.frontSpeed - results1.frontSpeed,
-                rearSpeed: results2.rearSpeed - results1.rearSpeed
+                rearSpeed: results2.rearSpeed - results1.rearSpeed,
+                overdrivePercentage: results2.overdrivePercentage - results1.overdrivePercentage
             }
         };
     }
