@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RC Crawler Gear Ratio Calculator</title>
+    <meta name="description" content="Professional RC crawler gear ratio calculator with speed calculations">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>RC Crawler Gear Ratio Calculator</h1>
+            <p>Calculate gear ratios and theoretical speeds for your RC crawler</p>
+        </header>
+        
+        <main class="content">
+            <section class="input-section">
+                <h2>Input Parameters</h2>
+                
+                <div class="input-group">
+                    <label for="pinion">Pinion Gear Tooth Count:</label>
+                    <input type="number" id="pinion" value="10" min="8" max="30" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="spur">Spur Gear Tooth Count:</label>
+                    <input type="number" id="spur" value="54" min="20" max="100" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="transmission">Transmission:</label>
+                    <select id="transmission" required>
+                        <option value="">Select Transmission...</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label for="frontAxle">Front Axle:</label>
+                    <select id="frontAxle" required>
+                        <option value="">Select Front Axle...</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label for="rearAxle">Rear Axle:</label>
+                    <select id="rearAxle" required>
+                        <option value="">Select Rear Axle...</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="reverseTransmission">
+                        <label for="reverseTransmission">Reverse Transmission Ratio</label>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="motorKV">Motor KV Value:</label>
+                    <input type="number" id="motorKV" value="1800" min="100" max="5000">
+                </div>
+                
+                <div class="input-group">
+                    <label for="maxVoltage">Max Battery Voltage:</label>
+                    <input type="number" id="maxVoltage" value="11.1" step="0.1" min="3" max="20">
+                </div>
+                
+                <div class="input-group">
+                    <label>Tire Size:</label>
+                    <div class="tire-size-group">
+                        <input type="number" id="tireSize" value="4.19" step="0.01" min="1" max="10">
+                        <select id="tireSizeUnit">
+                            <option value="inches">inches</option>
+                            <option value="mm">mm</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="results-section">
+                <h2>Calculation Results</h2>
+                
+                <div class="result-item">
+                    <h3>Motor Gear Ratio</h3>
+                    <div class="value" id="motorRatio">5.40:1</div>
+                </div>
+                
+                <div class="result-item">
+                    <h3>Final Front Ratio</h3>
+                    <div class="value" id="frontRatio">-</div>
+                </div>
+                
+                <div class="result-item">
+                    <h3>Final Rear Ratio</h3>
+                    <div class="value" id="rearRatio">-</div>
+                </div>
+                
+                <div class="speed-results">
+                    <div class="result-item">
+                        <h3>Front Theoretical Speed</h3>
+                        <div class="value" id="frontSpeed">-</div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <h3>Rear Theoretical Speed</h3>
+                        <div class="value" id="rearSpeed">-</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="footer">
+            <p>&copy; 2025 RC Crawler Calculator. Built for the RC crawling community.</p>
+        </footer>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="js/data.js"></script>
+    <script src="js/calculator.js"></script>
+    <script src="js/ui.js"></script>
+</body>
+</html>
