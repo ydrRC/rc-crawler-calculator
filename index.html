@@ -105,43 +105,43 @@
             <section class="results-section">
                 <h2>Calculation Results</h2>
                 
-                <div class="result-item">
+                <div class="result-item clickable" onclick="copyToClipboard(this)" title="Click to copy">
                     <h3>Motor Gear Ratio</h3>
                     <div class="value" id="motorRatio">4.308:1</div>
                 </div>
                 
-                <div class="result-item">
+                <div class="result-item clickable" onclick="copyToClipboard(this)" title="Click to copy">
                     <h3>Transmission Ratio</h3>
                     <div class="value" id="transmissionRatio">-</div>
                 </div>
                 
-                <div class="result-item">
+                <div class="result-item clickable" onclick="copyToClipboard(this)" title="Click to copy">
                     <h3>Front Axle Ratio</h3>
                     <div class="value" id="frontAxleRatio">-</div>
                 </div>
                 
-                <div class="result-item">
+                <div class="result-item clickable" onclick="copyToClipboard(this)" title="Click to copy">
                     <h3>Rear Axle Ratio</h3>
                     <div class="value" id="rearAxleRatio">-</div>
                 </div>
                 
-                <div class="result-item">
+                <div class="result-item clickable" onclick="copyToClipboard(this)" title="Click to copy">
                     <h3>Final Front Ratio</h3>
                     <div class="value" id="frontRatio">-</div>
                 </div>
                 
-                <div class="result-item">
+                <div class="result-item clickable" onclick="copyToClipboard(this)" title="Click to copy">
                     <h3>Final Rear Ratio</h3>
                     <div class="value" id="rearRatio">-</div>
                 </div>
                 
                 <div class="speed-results">
-                    <div class="result-item">
+                    <div class="result-item clickable" onclick="copyToClipboard(this)" title="Click to copy">
                         <h3>Approx. Front Speed</h3>
                         <div class="value" id="frontSpeed">-</div>
                     </div>
                     
-                    <div class="result-item">
+                    <div class="result-item clickable" onclick="copyToClipboard(this)" title="Click to copy">
                         <h3>Approx. Rear Speed</h3>
                         <div class="value" id="rearSpeed">-</div>
                     </div>
@@ -187,5 +187,124 @@
     <script src="js/data.js"></script>
     <script src="js/calculator.js"></script>
     <script src="js/ui.js"></script>
+    
+    <script>
+        // Clipboard functionality for result items
+        function copyToClipboard(element) {
+            const valueElement = element.querySelector('.value');
+            const titleElement = element.querySelector('h3');
+            
+            if (!valueElement || !titleElement) return;
+            
+            let value = valueElement.textContent.trim();
+            const title = titleElement.textContent.trim();
+            
+            // Don't copy if value is empty or dash
+            if (!value || value === '-') {
+                showCopyFeedback(element, 'No value to copy', 'error');
+                return;
+            }
+            
+            // If it's a ratio (contains ":1"), only copy the number before ":1"
+            if (value.includes(':1')) {
+                value = value.split(':1')[0];
+            } else {
+                // For other values with text (like "8.45 MPH"), extract just the number
+                const numberMatch = value.match(/[\d,.]+/);
+                if (numberMatch) {
+                    value = numberMatch[0];
+                }
+            }
+            
+            // Create the text to copy (just the numerical value)
+            const textToCopy = value;
+            
+            // Try to copy to clipboard
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    showCopyFeedback(element, 'Copied!', 'success');
+                }).catch(() => {
+                    fallbackCopyToClipboard(textToCopy, element);
+                });
+            } else {
+                fallbackCopyToClipboard(textToCopy, element);
+            }
+        }
+        
+        // Fallback copy method for older browsers
+        function fallbackCopyToClipboard(text, element) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showCopyFeedback(element, 'Copied!', 'success');
+                } else {
+                    showCopyFeedback(element, 'Copy failed', 'error');
+                }
+            } catch (err) {
+                showCopyFeedback(element, 'Copy not supported', 'error');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+        
+        // Show visual feedback when copying
+        function showCopyFeedback(element, message, type) {
+            // Add copied class for visual feedback
+            element.classList.add('copied');
+            
+            // Create temporary feedback element
+            const feedback = document.createElement('div');
+            feedback.textContent = message;
+            feedback.style.cssText = `
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: ${type === 'success' ? '#4CAF50' : '#f44336'};
+                color: white;
+                padding: 8px 16px;
+                border-radius: 4px;
+                font-size: 14px;
+                font-weight: bold;
+                z-index: 1000;
+                pointer-events: none;
+                animation: fadeInOut 1.5s ease-out forwards;
+            `;
+            
+            // Add fade animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeInOut {
+                    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+                    20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                    80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Position relative to the clicked element
+            element.style.position = 'relative';
+            element.appendChild(feedback);
+            
+            // Remove feedback and classes after animation
+            setTimeout(() => {
+                element.classList.remove('copied');
+                if (feedback.parentNode) {
+                    feedback.parentNode.removeChild(feedback);
+                }
+                document.head.removeChild(style);
+            }, 1500);
+        }
+    </script>
 </body>
 </html>
