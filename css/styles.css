@@ -1,4 +1,4 @@
-/* RC Crawler Calculator Styles */
+/* RC Crawler Calculator Styles - ydrRC Theme */
 
 /* Reset and Base Styles */
 * {
@@ -8,11 +8,12 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'Arial', 'Helvetica', sans-serif;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     min-height: 100vh;
     padding: 20px;
     line-height: 1.6;
+    color: #212529;
 }
 
 /* Container and Layout */
@@ -20,9 +21,10 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    border-radius: 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     overflow: hidden;
+    border: 3px solid #000000;
     animation: slideIn 0.5s ease-out;
 }
 
@@ -39,111 +41,161 @@ body {
 
 /* Header Styles */
 .header {
-    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    background: #000000;
     color: white;
-    padding: 30px;
+    padding: 40px 30px;
     text-align: center;
+    border-bottom: 3px solid #000000;
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.brand-logo {
+    height: 80px;
+    width: auto;
+    max-width: 300px;
+    object-fit: contain;
+    transition: all 0.3s ease;
+    background: white;
+    padding: 10px;
+    border: 2px solid #000000;
+}
+
+.brand-logo:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(255,255,255,0.3);
+}
+
+.header-text {
+    flex: 1;
+    min-width: 350px;
 }
 
 .header h1 {
-    font-size: 2.5em;
-    margin-bottom: 10px;
+    font-size: 2.8em;
+    margin-bottom: 15px;
     font-weight: 300;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    letter-spacing: 2px;
+    text-transform: uppercase;
 }
 
 .header p {
     opacity: 0.9;
-    font-size: 1.1em;
+    font-size: 1.2em;
+    font-weight: 300;
+    letter-spacing: 1px;
 }
 
 /* Content Layout */
 .content {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    padding: 40px;
+    gap: 0;
+    padding: 0;
 }
 
 /* Input Section */
 .input-section {
-    background: #f8f9fa;
-    padding: 30px;
-    border-radius: 15px;
-    border: 1px solid #e9ecef;
+    background: #ffffff;
+    padding: 40px;
+    border-right: 3px solid #000000;
     transition: all 0.3s ease;
 }
 
 .input-section:hover {
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    background: #f8f9fa;
 }
 
 .input-section h2 {
-    color: #2c3e50;
-    margin-bottom: 25px;
-    font-size: 1.5em;
-    border-bottom: 2px solid #3498db;
-    padding-bottom: 10px;
+    color: #000000;
+    margin-bottom: 30px;
+    font-size: 1.8em;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 3px solid #000000;
+    padding-bottom: 15px;
 }
 
 /* Input Groups */
 .input-group {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .input-group label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     font-weight: 600;
-    color: #34495e;
+    color: #000000;
     transition: color 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9em;
 }
 
 .input-group:focus-within label {
-    color: #3498db;
+    color: #495057;
 }
 
 .input-group select,
 .input-group input {
     width: 100%;
-    padding: 12px;
-    border: 2px solid #ddd;
-    border-radius: 8px;
+    padding: 15px;
+    border: 2px solid #000000;
+    border-radius: 0;
     font-size: 16px;
     transition: all 0.3s ease;
     background: white;
+    font-family: inherit;
 }
 
 .input-group select:focus,
 .input-group input:focus {
     outline: none;
-    border-color: #3498db;
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-    transform: translateY(-1px);
+    border-color: #495057;
+    background: #f8f9fa;
+    transform: none;
 }
 
 .input-group select:hover,
 .input-group input:hover {
-    border-color: #bdc3c7;
+    border-color: #495057;
+    background: #f8f9fa;
 }
 
 /* Checkbox Group */
 .checkbox-group {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 0;
+    gap: 15px;
+    padding: 15px 0;
+    border: 2px solid #000000;
+    padding-left: 15px;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+.checkbox-group:hover {
+    background: #f8f9fa;
 }
 
 .checkbox-group input[type="checkbox"] {
     width: auto;
-    transform: scale(1.2);
+    transform: scale(1.3);
     cursor: pointer;
+    accent-color: #000000;
 }
 
 .checkbox-group label {
     cursor: pointer;
     margin-bottom: 0;
+    font-weight: 500;
 }
 
 /* Tire Size Group */
@@ -163,34 +215,32 @@ body {
 
 /* Results Section */
 .results-section {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    background: #000000;
     color: white;
-    padding: 30px;
-    border-radius: 15px;
+    padding: 40px;
     transition: all 0.3s ease;
 }
 
 .results-section:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    background: #212529;
 }
 
 .results-section h2 {
-    margin-bottom: 25px;
-    font-size: 1.5em;
-    border-bottom: 2px solid rgba(255,255,255,0.3);
-    padding-bottom: 10px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    margin-bottom: 30px;
+    font-size: 1.8em;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 3px solid #ffffff;
+    padding-bottom: 15px;
 }
 
 /* Result Items */
 .result-item {
     background: rgba(255,255,255,0.1);
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.2);
+    padding: 20px;
+    border: 2px solid #ffffff;
+    margin-bottom: 20px;
     transition: all 0.3s ease;
 }
 
@@ -201,43 +251,70 @@ body {
 
 .result-item h3 {
     font-size: 1.1em;
-    margin-bottom: 5px;
-    opacity: 0.9;
+    margin-bottom: 8px;
     font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.9;
 }
 
 .result-item .value {
-    font-size: 1.8em;
-    font-weight: bold;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    font-size: 2.2em;
+    font-weight: 300;
     font-family: 'Courier New', monospace;
+    letter-spacing: 2px;
 }
 
 /* Speed Results Grid */
 .speed-results {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-top: 20px;
+    gap: 20px;
+    margin-top: 25px;
 }
 
 /* Footer */
 .footer {
-    background: #34495e;
+    background: #000000;
     color: white;
     text-align: center;
-    padding: 20px;
+    padding: 25px;
     font-size: 0.9em;
-    opacity: 0.8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    border-top: 3px solid #000000;
+}
+
+.footer-logo {
+    height: 40px;
+    width: auto;
+    background: white;
+    padding: 5px;
+    border: 2px solid #ffffff;
+    transition: all 0.3s ease;
+}
+
+.footer-logo:hover {
+    transform: scale(1.05);
+}
+
+.footer p {
+    font-weight: 300;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
 /* Input Validation States */
 .input-group input:invalid {
-    border-color: #e74c3c;
+    border-color: #dc3545;
+    background: #fff5f5;
 }
 
 .input-group input:valid {
-    border-color: #27ae60;
+    border-color: #28a745;
 }
 
 /* Loading Animation */
@@ -254,7 +331,7 @@ body {
     width: 20px;
     height: 20px;
     margin: -10px 0 0 -10px;
-    border: 2px solid #3498db;
+    border: 2px solid #000000;
     border-radius: 50%;
     border-top-color: transparent;
     animation: spin 1s linear infinite;
@@ -267,6 +344,7 @@ body {
 }
 
 /* Responsive Design */
+/* Responsive Design */
 @media (max-width: 768px) {
     body {
         padding: 10px;
@@ -274,21 +352,38 @@ body {
     
     .content {
         grid-template-columns: 1fr;
-        gap: 20px;
-        padding: 20px;
+        gap: 0;
+    }
+    
+    .input-section {
+        border-right: none;
+        border-bottom: 3px solid #000000;
     }
     
     .header h1 {
-        font-size: 2em;
+        font-size: 2.2em;
     }
     
     .header p {
         font-size: 1em;
     }
     
+    .header-brand {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .brand-logo {
+        height: 60px;
+    }
+    
+    .header-text {
+        min-width: auto;
+    }
+    
     .input-section,
     .results-section {
-        padding: 20px;
+        padding: 25px;
     }
     
     .speed-results {
@@ -296,13 +391,13 @@ body {
     }
     
     .result-item .value {
-        font-size: 1.5em;
+        font-size: 1.8em;
     }
 }
 
 @media (max-width: 480px) {
     .header {
-        padding: 20px;
+        padding: 25px 15px;
     }
     
     .header h1 {
@@ -317,6 +412,10 @@ body {
     .tire-size-group input,
     .tire-size-group select {
         flex: none;
+    }
+    
+    .container {
+        border-width: 2px;
     }
 }
 
@@ -336,7 +435,11 @@ body {
     }
     
     .result-item {
-        border: 2px solid rgba(255,255,255,0.5);
+        border: 3px solid #ffffff;
+    }
+    
+    .container {
+        border-width: 4px;
     }
 }
 
@@ -349,18 +452,17 @@ body {
     
     .container {
         box-shadow: none;
-        border-radius: 0;
+        border: 2px solid #000000;
     }
     
     .header {
-        background: #2c3e50 !important;
+        background: #000000 !important;
         -webkit-print-color-adjust: exact;
     }
     
     .results-section {
-        background: #f8f9fa !important;
-        color: #2c3e50 !important;
-        border: 2px solid #3498db;
+        background: #000000 !important;
+        color: #ffffff !important;
         -webkit-print-color-adjust: exact;
     }
     
