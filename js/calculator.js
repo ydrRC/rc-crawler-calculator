@@ -157,7 +157,7 @@ class CrawlerCalculator {
      */
     formatRatio(ratio) {
         if (!ratio || ratio === 0) return '-';
-        return `${ratio.toFixed(2)}:1`;
+        return `${ratio.toFixed(3)}:1`;
     }
 
     /**
@@ -167,7 +167,7 @@ class CrawlerCalculator {
      */
     formatSpeed(speed) {
         if (!speed || speed === 0) return '-';
-        return `${speed.toFixed(1)} MPH`;
+        return `${speed.toFixed(2)} MPH`;
     }
 
     /**

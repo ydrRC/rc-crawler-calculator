@@ -5,6 +5,13 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    .notes-section {
+        padding: 25px 15px;
+    }
+    
+    .notes-content p {
+        font-size: 0.9em;
+    }
 }
 
 body {
@@ -37,6 +44,29 @@ body {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* Logo Placeholder */
+.logo-placeholder {
+    background: white;
+    color: #000000;
+    border: 2px solid #000000;
+    padding: 10px 20px;
+    font-weight: bold;
+    font-size: 1.5em;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+}
+
+.logo-placeholder:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(255,255,255,0.3);
+}
+
+.logo-placeholder.small {
+    font-size: 1em;
+    padding: 5px 15px;
 }
 
 /* Header Styles */
@@ -123,6 +153,42 @@ body {
     padding-bottom: 15px;
 }
 
+/* Import/Export Buttons */
+.import-export-buttons {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #000000;
+}
+
+.action-btn {
+    background: #000000;
+    color: white;
+    border: 2px solid #000000;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.action-btn:hover {
+    background: white;
+    color: #000000;
+    transform: translateY(-2px);
+}
+
+.action-btn:active {
+    transform: translateY(0);
+}
+
 /* Input Groups */
 .input-group {
     margin-bottom: 25px;
@@ -169,20 +235,31 @@ body {
     background: #f8f9fa;
 }
 
+/* Disabled input styling */
+.input-group input:disabled {
+    background-color: #e9ecef !important;
+    color: #6c757d;
+    cursor: not-allowed !important;
+    border-color: #ced4da;
+}
+
+.input-group input:disabled:hover {
+    background-color: #e9ecef !important;
+    border-color: #ced4da;
+}
+
 /* Checkbox Group */
 .checkbox-group {
     display: flex;
     align-items: center;
     gap: 15px;
     padding: 15px 0;
-    border: 2px solid #000000;
-    padding-left: 15px;
-    margin-top: 10px;
+    margin-top: 15px;
     transition: all 0.3s ease;
 }
 
 .checkbox-group:hover {
-    background: #f8f9fa;
+    background: transparent;
 }
 
 .checkbox-group input[type="checkbox"] {
@@ -196,6 +273,21 @@ body {
     cursor: pointer;
     margin-bottom: 0;
     font-weight: 500;
+}
+
+/* Voltage Group */
+.voltage-group {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+}
+
+.voltage-group select {
+    flex: 2;
+}
+
+.voltage-group input {
+    flex: 1;
 }
 
 /* Tire Size Group */
@@ -404,13 +496,16 @@ body {
         font-size: 1.8em;
     }
     
-    .tire-size-group {
+    .tire-size-group,
+    .voltage-group {
         flex-direction: column;
         gap: 10px;
     }
     
     .tire-size-group input,
-    .tire-size-group select {
+    .tire-size-group select,
+    .voltage-group input,
+    .voltage-group select {
         flex: none;
     }
     
@@ -441,6 +536,57 @@ body {
     .container {
         border-width: 4px;
     }
+}
+
+/* Notes Section */
+.notes-section {
+    background: #f8f9fa;
+    padding: 40px;
+    border-top: 3px solid #000000;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.notes-section h2 {
+    color: #000000;
+    margin-bottom: 30px;
+    font-size: 1.8em;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 3px solid #000000;
+    padding-bottom: 15px;
+    text-align: center;
+}
+
+.notes-content {
+    line-height: 1.8;
+    color: #2c3e50;
+}
+
+.notes-content p {
+    margin-bottom: 20px;
+    font-size: 1em;
+}
+
+.notes-content strong {
+    color: #000000;
+    font-weight: 600;
+}
+
+.notes-content a {
+    color: #2c3e50;
+    text-decoration: none;
+    border-bottom: 1px solid #2c3e50;
+    transition: all 0.3s ease;
+}
+
+.notes-content a:hover {
+    color: #000000;
+    border-bottom-color: #000000;
+    background: rgba(0,0,0,0.05);
+    padding: 2px 4px;
+    border-radius: 3px;
 }
 
 /* Print Styles */
