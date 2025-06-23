@@ -584,6 +584,11 @@ body {
     font-size: 1em;
 }
 
+.notes-content .first-note {
+    color: #dc3545;
+    font-weight: bold;
+}
+
 .notes-content strong {
     color: #000000;
     font-weight: 600;
