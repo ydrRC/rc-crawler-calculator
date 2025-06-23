@@ -429,16 +429,14 @@ body {
 }
 
 .footer-logo {
-    height: 40px;
+    height: 80px;
     width: auto;
-    background: white;
-    padding: 5px;
-    border: 2px solid #ffffff;
     transition: all 0.3s ease;
+    filter: invert(1);
 }
 
 .footer-logo:hover {
-    transform: scale(1.05);
+    transform: scale(1.75);
 }
 
 .footer p {
