@@ -3,9 +3,6 @@
  * Handles user interface interactions and display updates
  */
 
-/**
- * Initialize the calculator UI
- */
 function initializeUI() {
     console.log('Initializing RC Crawler Calculator UI...');
     
@@ -13,7 +10,6 @@ function initializeUI() {
         populateTransmissions();
         populateAxles();
         
-        // Set defaults after population
         setTimeout(() => {
             setDefaults();
             calculate();
@@ -28,9 +24,6 @@ function initializeUI() {
     }
 }
 
-/**
- * Populate transmission dropdown
- */
 function populateTransmissions() {
     const select = document.getElementById('transmission');
     if (!select) {
@@ -40,7 +33,6 @@ function populateTransmissions() {
     
     const transmissions = getTransmissionNames();
     
-    // Clear existing options except the first one
     while (select.children.length > 1) {
         select.removeChild(select.lastChild);
     }
@@ -55,9 +47,6 @@ function populateTransmissions() {
     console.log(`Populated ${transmissions.length} transmissions`);
 }
 
-/**
- * Populate axle dropdowns
- */
 function populateAxles() {
     const frontSelect = document.getElementById('frontAxle');
     const rearSelect = document.getElementById('rearAxle');
@@ -69,7 +58,6 @@ function populateAxles() {
     
     const axles = getAxleNames();
     
-    // Clear existing options except the first one
     while (frontSelect.children.length > 1) {
         frontSelect.removeChild(frontSelect.lastChild);
     }
@@ -92,9 +80,6 @@ function populateAxles() {
     console.log(`Populated ${axles.length} axles`);
 }
 
-/**
- * Set default values for the form
- */
 function setDefaults() {
     const defaults = {
         transmission: 'Axial 3-Gear',
@@ -112,9 +97,6 @@ function setDefaults() {
     console.log('Default values set');
 }
 
-/**
- * Add event listeners to form elements
- */
 function addEventListeners() {
     const inputs = [
         'pinion', 'spur', 'transmission', 'frontAxle', 'rearAxle', 
@@ -131,30 +113,22 @@ function addEventListeners() {
         }
     });
     
-    // Add export button listener
     const exportBtn = document.getElementById('exportBtn');
     if (exportBtn) {
         exportBtn.addEventListener('click', exportConfiguration);
     }
     
-    // Add import file listener
     const importFile = document.getElementById('importFile');
     if (importFile) {
         importFile.addEventListener('change', handleImportFile);
     }
     
-    // Add voltage preset listener
     setupVoltagePresetListener();
-    
-    // Add result click listeners for copy functionality
     setupResultClickListeners();
     
     console.log('Event listeners added');
 }
 
-/**
- * Setup voltage preset functionality
- */
 function setupVoltagePresetListener() {
     const voltagePresetEl = document.getElementById('voltagePreset');
     const maxVoltageEl = document.getElementById('maxVoltage');
@@ -176,9 +150,6 @@ function setupVoltagePresetListener() {
     }
 }
 
-/**
- * Setup click listeners for result items (copy functionality)
- */
 function setupResultClickListeners() {
     const resultItems = document.querySelectorAll('.result-item.clickable');
     resultItems.forEach(item => {
@@ -186,9 +157,6 @@ function setupResultClickListeners() {
     });
 }
 
-/**
- * Main calculation function
- */
 function calculate() {
     try {
         const params = getCalculationParameters();
@@ -203,10 +171,6 @@ function calculate() {
     }
 }
 
-/**
- * Get calculation parameters from form
- * @returns {Object} Calculation parameters
- */
 function getCalculationParameters() {
     return {
         spurTeeth: parseFloat(document.getElementById('spur').value) || 0,
@@ -222,18 +186,11 @@ function getCalculationParameters() {
     };
 }
 
-/**
- * Update the results display
- * @param {Object} params - Calculation parameters
- * @param {Object} results - Raw calculation results
- * @param {Object} formatted - Formatted results
- */
 function updateResultsDisplay(params, results, formatted) {
     const transmission = getTransmission(params.transmissionName);
     const frontAxleRatio = getAxle(params.frontAxleName);
     const rearAxleRatio = getAxle(params.rearAxleName);
     
-    // Update individual result elements
     updateElement('motorRatio', formatted.motorRatio);
     updateTransmissionRatio(transmission, params.reverseTransmission);
     updateElement('frontAxleRatio', frontAxleRatio ? `${frontAxleRatio.toFixed(3)}:1` : '-');
@@ -245,11 +202,6 @@ function updateResultsDisplay(params, results, formatted) {
     updateElement('rearSpeed', formatted.rearSpeed);
 }
 
-/**
- * Update transmission ratio display
- * @param {Object} transmission - Transmission data
- * @param {boolean} reverseTransmission - Whether transmission is reversed
- */
 function updateTransmissionRatio(transmission, reverseTransmission) {
     const transmissionRatioEl = document.getElementById('transmissionRatio');
     if (!transmissionRatioEl) return;
@@ -269,11 +221,6 @@ function updateTransmissionRatio(transmission, reverseTransmission) {
     }
 }
 
-/**
- * Update a single display element
- * @param {string} id - Element ID
- * @param {string} value - Value to display
- */
 function updateElement(id, value) {
     const element = document.getElementById(id);
     if (element) {
@@ -281,34 +228,24 @@ function updateElement(id, value) {
     }
 }
 
-/**
- * Debounced calculation function
- */
 let debounceTimer = null;
 function debounceCalculate() {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(calculate, 300);
 }
 
-/**
- * Copy result value to clipboard
- * @param {HTMLElement} element - Result element
- */
 function copyToClipboard(element) {
     const valueElement = element.querySelector('.value');
-    const titleElement = element.querySelector('h3');
     
-    if (!valueElement || !titleElement) return;
+    if (!valueElement) return;
     
     let value = valueElement.textContent.trim();
-    const title = titleElement.textContent.trim();
     
     if (!value || value === '-') {
         showCopyFeedback(element, 'No value to copy', 'error');
         return;
     }
     
-    // Extract numeric value from formatted text
     if (value.includes(':1')) {
         value = value.split(':1')[0];
     } else {
@@ -318,24 +255,17 @@ function copyToClipboard(element) {
         }
     }
     
-    const textToCopy = value;
-    
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(textToCopy).then(() => {
+        navigator.clipboard.writeText(value).then(() => {
             showCopyFeedback(element, 'Copied!', 'success');
         }).catch(() => {
-            fallbackCopyToClipboard(textToCopy, element);
+            fallbackCopyToClipboard(value, element);
         });
     } else {
-        fallbackCopyToClipboard(textToCopy, element);
+        fallbackCopyToClipboard(value, element);
     }
 }
 
-/**
- * Fallback copy to clipboard method
- * @param {string} text - Text to copy
- * @param {HTMLElement} element - Element for feedback
- */
 function fallbackCopyToClipboard(text, element) {
     const textArea = document.createElement('textarea');
     textArea.value = text;
@@ -360,12 +290,6 @@ function fallbackCopyToClipboard(text, element) {
     document.body.removeChild(textArea);
 }
 
-/**
- * Show copy feedback animation
- * @param {HTMLElement} element - Element to show feedback on
- * @param {string} message - Feedback message
- * @param {string} type - Feedback type ('success' or 'error')
- */
 function showCopyFeedback(element, message, type) {
     element.classList.add('copied');
     
@@ -412,13 +336,8 @@ function showCopyFeedback(element, message, type) {
     }, 1500);
 }
 
-/**
- * Export configuration to file
- */
 function exportConfiguration() {
     try {
-        console.log('Starting export...');
-        
         const config = getFormConfiguration();
         const results = calculator.calculateAll({
             spurTeeth: parseFloat(config.spur) || 0,
@@ -435,15 +354,12 @@ function exportConfiguration() {
         
         let content = createExportContent(config, results);
         
-        // Add version info if available
         if (typeof addVersionToExport === 'function') {
             content = addVersionToExport(content);
         }
         
         downloadFile(content, `crawler-config-${new Date().toISOString().slice(0, 10)}.txt`);
-        
         showExportFeedback();
-        console.log('Configuration exported successfully');
         
     } catch (error) {
         console.error('Export error:', error);
@@ -451,10 +367,6 @@ function exportConfiguration() {
     }
 }
 
-/**
- * Get form configuration values
- * @returns {Object} Form configuration
- */
 function getFormConfiguration() {
     const getElementValue = (id, defaultValue = '') => {
         const element = document.getElementById(id);
@@ -481,12 +393,6 @@ function getFormConfiguration() {
     };
 }
 
-/**
- * Create export file content
- * @param {Object} config - Configuration data
- * @param {Object} results - Calculation results
- * @returns {string} Export file content
- */
 function createExportContent(config, results) {
     const timestamp = new Date().toLocaleString();
     const formatted = calculator.getFormattedResults();
@@ -552,11 +458,6 @@ Generated by ydrRC Crawler Calculator
 ===============================================`;
 }
 
-/**
- * Download file with given content
- * @param {string} content - File content
- * @param {string} filename - File name
- */
 function downloadFile(content, filename) {
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -569,9 +470,6 @@ function downloadFile(content, filename) {
     URL.revokeObjectURL(url);
 }
 
-/**
- * Show export success feedback
- */
 function showExportFeedback() {
     const exportBtn = document.getElementById('exportBtn');
     if (exportBtn) {
@@ -585,15 +483,9 @@ function showExportFeedback() {
     }
 }
 
-/**
- * Handle import file selection
- * @param {Event} event - File input change event
- */
 function handleImportFile(event) {
     const file = event.target.files[0];
     if (!file) return;
-    
-    console.log('Importing file:', file.name);
     
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -609,67 +501,21 @@ function handleImportFile(event) {
                 showImportFeedback('Could not find valid configuration data in file', 'error');
             }
         } catch (error) {
-            console.error('Import error:', error);
             showImportFeedback('Error: ' + error.message, 'error');
         }
         
         event.target.value = '';
     };
     
-    reader.onerror = function() {
-        showImportFeedback('Failed to read file', 'error');
-        event.target.value = '';
-    };
-    
     reader.readAsText(file);
 }
 
-/**
- * Parse import file content
- * @param {string} content - File content
- * @returns {Object|null} Parsed configuration
- */
 function parseImportContent(content) {
-    console.log('Parsing import content...');
-    
     const configStart = content.indexOf('CONFIG_START');
     const configEnd = content.indexOf('CONFIG_END');
     
     if (configStart === -1 || configEnd === -1) {
-        // Try alternative parsing
-        const lines = content.split('\n');
-        const config = {};
-        let foundAny = false;
-        
-        const knownKeys = [
-            'pinion', 'spur', 'transmission', 'frontAxle', 'rearAxle', 
-            'reverseTransmission', 'motorKV', 'voltagePreset', 'maxVoltage', 
-            'tireSize', 'tireSizeUnit'
-        ];
-        
-        for (const line of lines) {
-            const trimmed = line.trim();
-            if (trimmed.includes('=') && !trimmed.startsWith('#') && !trimmed.startsWith('=')) {
-                const parts = trimmed.split('=');
-                if (parts.length >= 2) {
-                    const key = parts[0].trim();
-                    const value = parts.slice(1).join('=').trim();
-                    
-                    if (knownKeys.includes(key)) {
-                        if (value === 'true') {
-                            config[key] = true;
-                        } else if (value === 'false') {
-                            config[key] = false;
-                        } else {
-                            config[key] = value;
-                        }
-                        foundAny = true;
-                    }
-                }
-            }
-        }
-        
-        return foundAny ? config : null;
+        return null;
     }
     
     const configSection = content.substring(configStart + 12, configEnd).trim();
@@ -698,32 +544,21 @@ function parseImportContent(content) {
     return config;
 }
 
-/**
- * Apply imported configuration to form
- * @param {Object} config - Configuration to apply
- */
 function applyImportedConfig(config) {
-    console.log('Applying imported config:', config);
-    
     const setValue = (id, value) => {
         const element = document.getElementById(id);
         if (element && value !== undefined && value !== null && value !== '') {
             element.value = value;
-            return true;
         }
-        return false;
     };
     
     const setChecked = (id, checked) => {
         const element = document.getElementById(id);
         if (element && checked !== undefined && checked !== null) {
             element.checked = checked;
-            return true;
         }
-        return false;
     };
     
-    // Apply all values
     setValue('pinion', config.pinion);
     setValue('spur', config.spur);
     setValue('transmission', config.transmission);
@@ -736,7 +571,6 @@ function applyImportedConfig(config) {
     setValue('tireSize', config.tireSize);
     setValue('tireSizeUnit', config.tireSizeUnit);
     
-    // Handle voltage preset logic
     const voltagePreset = document.getElementById('voltagePreset');
     const maxVoltage = document.getElementById('maxVoltage');
     
@@ -753,11 +587,6 @@ function applyImportedConfig(config) {
     }
 }
 
-/**
- * Show import feedback message
- * @param {string} message - Feedback message
- * @param {string} type - Message type ('success' or 'error')
- */
 function showImportFeedback(message, type) {
     const feedback = document.createElement('div');
     feedback.textContent = message;
@@ -773,35 +602,22 @@ function showImportFeedback(message, type) {
         font-weight: bold;
         z-index: 10000;
         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        animation: slideInRight 0.3s ease-out;
     `;
     
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-    `;
-    document.head.appendChild(style);
     document.body.appendChild(feedback);
     
     setTimeout(() => {
-        if (feedback.parentNode) feedback.parentNode.removeChild(feedback);
-        if (style.parentNode) style.parentNode.removeChild(style);
+        if (feedback.parentNode) {
+            feedback.parentNode.removeChild(feedback);
+        }
     }, 3000);
 }
 
-/**
- * Show error message
- * @param {string} message - Error message
- */
 function showErrorMessage(message) {
     console.error(message);
     showImportFeedback(message, 'error');
 }
 
-// Initialize calculator when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing calculator...');
     initializeUI();
