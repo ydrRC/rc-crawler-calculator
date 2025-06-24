@@ -15,6 +15,7 @@ A professional web-based calculator for RC crawler gear ratios and theoretical s
   - Real-time calculations as you type
 - **Professional UI**: Modern, responsive design that works on all devices
 - **Data Validation**: Input validation with helpful warnings and error messages
+- **Import/Export**: Save and load configurations
 
 ## 🛠️ Installation
 
@@ -24,10 +25,18 @@ A professional web-based calculator for RC crawler gear ratios and theoretical s
    ```
    rc-crawler-calculator/
    ├── index.html
-   ├── css/styles.css
-   ├── js/data.js
-   ├── js/calculator.js
-   └── js/ui.js
+   ├── css/
+   │   └── styles.css
+   ├── js/
+   │   ├── data.js
+   │   ├── calculator.js
+   │   └── ui.js
+   ├── images/
+   │   ├── ydrRC_Logo.png
+   │   └── YDR.png
+   ├── README.md
+   ├── LICENSE
+   └── .gitignore
    ```
 3. Open `index.html` in any modern web browser
 
@@ -74,6 +83,10 @@ Check the "Reverse Transmission Ratio" option to swap front and rear transmissio
 #### Tire Size Units
 Toggle between inches and millimeters for tire diameter input. Common sizes:
 - **Scale Options**: Various tooth count combinations for fine-tuning
+
+#### Import/Export Configurations
+- **Export**: Save your current setup to a text file with all calculations
+- **Import**: Load a previously saved configuration file
 
 ## 🎯 Use Cases
 
@@ -140,7 +153,7 @@ Edit `js/data.js` and add to the `TRANSMISSIONS` object:
 ```
 
 #### New Axle
-Add to the `AXLES` object:
+Add to the `AXLES` object in `js/data.js`:
 ```javascript
 "New Axle Name": 4.125
 ```
@@ -151,93 +164,16 @@ All gear ratios are sourced from:
 - Community measurements
 - RC crawler forums and databases
 
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**Calculator not loading**:
-- Ensure all JavaScript files are in the correct folders
-- Check browser console for errors
-- Verify file permissions
-
-**Incorrect calculations**:
-- Verify input values are within expected ranges
-- Check that all required fields are filled
-- Ensure transmission/axle selections are valid
-
-**Mobile display issues**:
-- Calculator is fully responsive
-- If layout appears broken, try refreshing the page
-- Report persistent mobile issues
-
-### Performance Tips
-- Use a local web server for best performance
-- Modern browsers cache files for faster subsequent loads
-- Calculator works offline once loaded
-
-## 🤝 Contributing
-
-We welcome contributions! Here's how you can help:
-
-### Data Contributions
-- **New Transmissions**: Submit specs with front/rear ratios
-- **New Axles**: Include accurate gear ratios
-- **Corrections**: Report any incorrect data
-
-### Feature Requests
-- Additional calculation modes
-- Export/import functionality
-- Comparison tools
-- Mobile app version
-
-### Code Contributions
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## 📄 License
-
-This project is open source and available under the MIT License.
-
-## 🙏 Credits
-
-- **Data Sources**: RC crawler community, manufacturer specs
-- **Design Inspiration**: Modern web calculator interfaces
-- **Testing**: RC crawler enthusiasts and competition drivers
-
-## 📞 Support
-
-For questions, bug reports, or feature requests:
-- Create an issue in the project repository
-- Contact through RC crawler forums
-- Email: [your-email@domain.com]
-
-## 🔮 Roadmap
-
-### Version 2.0 (Planned)
-- [ ] Save/load configurations
-- [ ] Multiple setup comparisons
-- [ ] Advanced charts and visualizations
-- [ ] Battery life estimations
-- [ ] Torque calculations
-- [ ] Mobile app version
-
-### Version 3.0 (Future)
-- [ ] Community database integration
-- [ ] Setup sharing platform
-- [ ] Competition mode calculations
-- [ ] Advanced motor curve analysis
-
----
-
-**Built with ❤️ for the RC crawling community**
-
-*Last updated: June 2025* tires**: 4.19" (106mm), 4.75" (121mm)
-- **Larger tires**: 5.5" (140mm), 6" (152mm)
-
 ## 🔧 Technical Details
+
+### Project Structure
+The calculator consists of several modular JavaScript files:
+
+- **`index.html`**: Main application file with embedded styles and complete functionality
+- **`js/data.js`**: Contains all transmission and axle data with helper functions
+- **`js/calculator.js`**: Core calculation engine for gear ratios and speeds
+- **`js/ui.js`**: User interface management and event handling
+- **`css/styles.css`**: Styling and responsive design
 
 ### Calculation Formulas
 
@@ -272,4 +208,97 @@ Where: Motor RPM = Motor KV × Battery Voltage
 - **Axial**: AR44, AR45, AR60 with various gear sets
 - **Portal Axles**: Multiple gear ratio options
 - **Aftermarket**: Dlux, MEUS Racing, VP, and others
-- **Scale
+- **Scale tires**: 4.19" (106mm), 4.75" (121mm)
+- **Larger tires**: 5.5" (140mm), 6" (152mm)
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Calculator not loading**:
+- Ensure all JavaScript files are in the correct folders (`js/data.js`, `js/calculator.js`, `js/ui.js`)
+- Check browser console for errors
+- Verify file permissions
+
+**Missing logos**:
+- Ensure image files exist in `images/` folder:
+  - `images/ydrRC_Logo.png`
+  - `images/YDR.png`
+
+**Incorrect calculations**:
+- Verify input values are within expected ranges
+- Check that all required fields are filled
+- Ensure transmission/axle selections are valid
+
+**Mobile display issues**:
+- Calculator is fully responsive
+- If layout appears broken, try refreshing the page
+- Report persistent mobile issues
+
+### Performance Tips
+- Use a local web server for best performance
+- Modern browsers cache files for faster subsequent loads
+- Calculator works offline once loaded
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how you can help:
+
+### Data Contributions
+- **New Transmissions**: Submit specs with front/rear ratios
+- **New Axles**: Include accurate gear ratios
+- **Corrections**: Report any incorrect data
+
+### Feature Requests
+- Additional calculation modes
+- Export/import functionality improvements
+- Comparison tools
+- Mobile app version
+
+### Code Contributions
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📄 License
+
+This project is open source and available under the MIT License.
+
+## 🙏 Credits
+
+- **Data Sources**: RC crawler community, manufacturer specs
+- **Design Inspiration**: Modern web calculator interfaces
+- **Testing**: RC crawler enthusiasts and competition drivers
+- **Original Creator**: Travis Miller (original sheet)
+- **Contributors**: Mehmet Tuzel (suggestions and verification)
+
+## 📞 Support
+
+For questions, bug reports, or feature requests:
+- Create an issue in the project repository
+- Contact through RC crawler forums
+- Email: jeff@ydrRC.com
+
+## 🔮 Roadmap
+
+### Version 2.0 (Planned)
+- [ ] Save/load configurations ✅ (Complete)
+- [ ] Multiple setup comparisons
+- [ ] Advanced charts and visualizations
+- [ ] Battery life estimations
+- [ ] Torque calculations
+- [ ] Mobile app version
+
+### Version 3.0 (Future)
+- [ ] Community database integration
+- [ ] Setup sharing platform
+- [ ] Competition mode calculations
+- [ ] Advanced motor curve analysis
+
+---
+
+**Built with ❤️ for the RC crawling community**
+
+*Last updated: June 2025*
