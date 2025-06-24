@@ -396,7 +396,39 @@ function handleImportFile(event) {
             const configEnd = content.indexOf('CONFIG_END');
             
             if (configStart === -1 || configEnd === -1) {
-                showImportFeedback('Error: ' + error.message, 'error');
+                showImportFeedback('Could not find valid configuration data in file', 'error');
+                return;
+            }
+            
+            const configSection = content.substring(configStart + 12, configEnd).trim();
+            const config = {};
+            const lines = configSection.split('\n');
+            
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (trimmed && trimmed.includes('=')) {
+                    const equalPos = trimmed.indexOf('=');
+                    const key = trimmed.substring(0, equalPos).trim();
+                    const value = trimmed.substring(equalPos + 1).trim();
+                    
+                    if (key) {
+                        if (value === 'true') {
+                            config[key] = true;
+                        } else if (value === 'false') {
+                            config[key] = false;
+                        } else {
+                            config[key] = value;
+                        }
+                    }
+                }
+            }
+            
+            applyImportedConfig(config);
+            showImportFeedback('Configuration imported successfully!', 'success');
+            setTimeout(calculate, 100);
+            
+        } catch (error) {
+            showImportFeedback('Error: ' + error.message, 'error');
         }
         
         event.target.value = '';
@@ -477,36 +509,4 @@ function showImportFeedback(message, type) {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing calculator...');
     initializeUI();
-});('Could not find valid configuration data in file', 'error');
-                return;
-            }
-            
-            const configSection = content.substring(configStart + 12, configEnd).trim();
-            const config = {};
-            const lines = configSection.split('\n');
-            
-            for (const line of lines) {
-                const trimmed = line.trim();
-                if (trimmed && trimmed.includes('=')) {
-                    const equalPos = trimmed.indexOf('=');
-                    const key = trimmed.substring(0, equalPos).trim();
-                    const value = trimmed.substring(equalPos + 1).trim();
-                    
-                    if (key) {
-                        if (value === 'true') {
-                            config[key] = true;
-                        } else if (value === 'false') {
-                            config[key] = false;
-                        } else {
-                            config[key] = value;
-                        }
-                    }
-                }
-            }
-            
-            applyImportedConfig(config);
-            showImportFeedback('Configuration imported successfully!', 'success');
-            setTimeout(calculate, 100);
-            
-        } catch (error) {
-            showImportFeedback
+});
