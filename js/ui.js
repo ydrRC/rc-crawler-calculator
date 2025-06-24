@@ -148,6 +148,47 @@ function setupVoltagePresetListener() {
             calculate();
         });
     }
+    
+    // Add tire size unit conversion
+    const tireSizeUnitEl = document.getElementById('tireSizeUnit');
+    const tireSizeEl = document.getElementById('tireSize');
+    
+    if (tireSizeUnitEl && tireSizeEl) {
+        let lastUnit = tireSizeUnitEl.value; // Track the previous unit
+        
+        tireSizeUnitEl.addEventListener('change', function() {
+            const currentUnit = this.value;
+            const currentValue = parseFloat(tireSizeEl.value);
+            
+            // Only convert if there's a valid value
+            if (currentValue && currentValue > 0) {
+                let convertedValue;
+                
+                if (lastUnit === 'inches' && currentUnit === 'mm') {
+                    // Convert inches to mm
+                    convertedValue = currentValue * 25.4;
+                } else if (lastUnit === 'mm' && currentUnit === 'inches') {
+                    // Convert mm to inches
+                    convertedValue = currentValue / 25.4;
+                } else {
+                    // No conversion needed
+                    convertedValue = currentValue;
+                }
+                
+                // Update the tire size input with converted value
+                if (convertedValue !== currentValue) {
+                    tireSizeEl.value = convertedValue.toFixed(2);
+                    console.log(`Converted tire size: ${currentValue} ${lastUnit} → ${convertedValue.toFixed(2)} ${currentUnit}`);
+                }
+            }
+            
+            // Update last unit for next conversion
+            lastUnit = currentUnit;
+            
+            // Recalculate
+            calculate();
+        });
+    }
 }
 
 function setupResultClickListeners() {
