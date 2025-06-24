@@ -14,13 +14,6 @@ function initializeUI() {
             setDefaults();
             calculate();
         }, 100);
-		
-		// Add this to the initializeUI function
-		setTimeout(() => {
-		if (typeof setupComparison !== 'undefined') {
-			setupComparison.initialize();
-		}
-		}, 500);
         
         addEventListeners();
         
