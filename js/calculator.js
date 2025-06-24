@@ -202,9 +202,10 @@ class CrawlerCalculator {
      * @returns {string} Formatted percentage string
      */
     formatPercentage(percentage) {
-        if (percentage === 0 || !isFinite(percentage)) return '-';
+        if (!isFinite(percentage)) return '-';
+        if (percentage === 0) return '0.00%';
         const sign = percentage > 0 ? '+' : '';
-        return `${sign}${percentage.toFixed(1)}%`;
+        return `${sign}${percentage.toFixed(2)}%`;
     }
 
     /**
