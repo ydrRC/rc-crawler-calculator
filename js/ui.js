@@ -163,8 +163,8 @@ function setupVoltagePresetListener() {
             const currentUnit = this.value;
             const currentValue = parseFloat(tireSizeEl.value);
             
-            // Only convert if there's a valid value
-            if (currentValue && currentValue > 0) {
+            // Only convert if there's a valid value and units are actually different
+            if (currentValue && currentValue > 0 && lastUnit !== currentUnit) {
                 let convertedValue;
                 
                 if (lastUnit === 'inches' && currentUnit === 'mm') {
