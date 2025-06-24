@@ -6,8 +6,8 @@
 const TRANSMISSIONS = {
     "Axial 3-Gear": { front: 2.600, rear: 2.600 },
     "Axial Capra - 34(32) Spur": { front: 1.800, rear: 1.800 },
-    "Axial Capra UTB18 40(48) Spur": { front: 3.825, rear: 3.825 },
-    "Axial Capra UTB18 [TGH] 42(48) Spur": { front: 3.825, rear: 3.825 },
+    "Axial Capra UTB18 40 (48) Spur": { front: 3.825, rear: 3.825 },
+    "Axial Capra UTB18 [TGH] 42 (48) Spur": { front: 3.825, rear: 3.825 },
     "Axial LCXU (Basecamp) - Portal": { front: 1.643, rear: 1.643 },
     "Axial LCXU (Basecamp) - Straight": { front: 2.614, rear: 2.614 },
     "Axial SCX10 Pro - 0% OD": { front: 2.222, rear: 2.222 },
@@ -40,7 +40,7 @@ const TRANSMISSIONS = {
     "High Altitude PS200": { front: 1.540, rear: 2.000 },
     "Hotline Performance ODD - 36(48) Spur": { front: 3.000, rear: 4.000 },
     "HPI Venture Trans & Case - 60(48) Spur": { front: 2.297, rear: 2.297 },
-	"Nordic Crawl ULV 40(48) Spur": { front: 2.860, rear: 2.860 },
+    "Nordic Crawl ULV 40(48) Spur": { front: 2.860, rear: 2.860 },
     "MEUS Racing LCG-Gold Rush": { front: 2.000, rear: 2.533 },
     "Procrawler Grind 328 LCG OD": { front: 1.950, rear: 1.350 },
     "Procrawler Grind 431 LCG OD": { front: 1.833, rear: 2.500 },
@@ -168,4 +168,24 @@ function getTransmission(name) {
 
 function getAxle(name) {
     return AXLES[name] || null;
+}
+
+/**
+ * Convert MPH to KM/H
+ * @param {number} mph - Speed in miles per hour
+ * @returns {number} Speed in kilometers per hour
+ */
+function mphToKmh(mph) {
+    return mph * 1.60934;
+}
+
+/**
+ * Format speed for display with both MPH and KM/H
+ * @param {number} speedMPH - Speed in MPH
+ * @returns {string} Formatted speed string
+ */
+function formatSpeedDisplay(speedMPH) {
+    if (!speedMPH || speedMPH === 0) return '-';
+    const speedKMH = mphToKmh(speedMPH);
+    return `${speedMPH.toFixed(2)} MPH (${speedKMH.toFixed(2)} KM/H)`;
 }

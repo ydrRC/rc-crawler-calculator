@@ -298,7 +298,8 @@ class SetupComparison {
                 formattedDiff = `${sign}${difference.toFixed(2)}%`;
                 break;
             case 'speed':
-                formattedDiff = `${sign}${difference.toFixed(2)} MPH`;
+                const speedKMH = mphToKmh(Math.abs(difference));
+                formattedDiff = `${sign}${Math.abs(difference).toFixed(2)} MPH (${sign}${speedKMH.toFixed(2)} KM/H)`;
                 break;
         }
 
@@ -328,8 +329,9 @@ class SetupComparison {
             if (Math.abs(speedDiff) > 0.5) {
                 const faster = speedDiff > 0 ? setupBName : setupAName;
                 const slower = speedDiff > 0 ? setupAName : setupBName;
+                const speedDiffKMH = mphToKmh(Math.abs(speedDiff));
                 summary.push(`<div class="summary-highlight ${speedDiff > 0 ? '' : 'better'}">
-                    <strong>Speed:</strong> ${faster} is ${Math.abs(speedDiff).toFixed(1)} MPH faster than ${slower}
+                    <strong>Speed:</strong> ${faster} is ${Math.abs(speedDiff).toFixed(1)} MPH (${speedDiffKMH.toFixed(1)} KM/H) faster than ${slower}
                 </div>`);
             }
         }
