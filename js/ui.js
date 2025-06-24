@@ -3,7 +3,14 @@
  * Handles user interface interactions and display updates
  */
 
+let uiInitialized = false;
+
 function initializeUI() {
+    if (uiInitialized) {
+        console.log('UI already initialized, skipping...');
+        return;
+    }
+    
     console.log('Initializing RC Crawler Calculator UI...');
     
     try {
@@ -17,6 +24,7 @@ function initializeUI() {
         
         addEventListeners();
         
+        uiInitialized = true;
         console.log('UI initialization complete');
     } catch (error) {
         console.error('UI initialization error:', error);
@@ -154,14 +162,18 @@ function setupVoltagePresetListener() {
     const tireSizeEl = document.getElementById('tireSize');
     
     if (tireSizeUnitEl && tireSizeEl) {
-        let lastUnit = tireSizeUnitEl.value; // Track the previous unit
+        // Store the current unit as a data attribute to avoid confusion
+        tireSizeUnitEl.dataset.lastUnit = tireSizeUnitEl.value;
         
         // Set initial min/max based on current unit
         updateTireSizeValidation(tireSizeUnitEl.value, tireSizeEl);
         
         tireSizeUnitEl.addEventListener('change', function() {
             const currentUnit = this.value;
+            const lastUnit = this.dataset.lastUnit || 'inches';
             const currentValue = parseFloat(tireSizeEl.value);
+            
+            console.log(`Unit change: ${lastUnit} → ${currentUnit}, value: ${currentValue}`);
             
             // Only convert if there's a valid value and units are actually different
             if (currentValue && currentValue > 0 && lastUnit !== currentUnit) {
@@ -170,26 +182,31 @@ function setupVoltagePresetListener() {
                 if (lastUnit === 'inches' && currentUnit === 'mm') {
                     // Convert inches to mm
                     convertedValue = currentValue * 25.4;
+                    console.log(`Converting ${currentValue} inches to ${convertedValue.toFixed(2)} mm`);
                 } else if (lastUnit === 'mm' && currentUnit === 'inches') {
                     // Convert mm to inches
                     convertedValue = currentValue / 25.4;
+                    console.log(`Converting ${currentValue} mm to ${convertedValue.toFixed(2)} inches`);
                 } else {
                     // No conversion needed
                     convertedValue = currentValue;
+                    console.log(`No conversion needed, same units: ${currentUnit}`);
                 }
                 
                 // Update the tire size input with converted value
                 if (convertedValue !== currentValue) {
                     tireSizeEl.value = convertedValue.toFixed(2);
-                    console.log(`Converted tire size: ${currentValue} ${lastUnit} → ${convertedValue.toFixed(2)} ${currentUnit}`);
+                    console.log(`Updated tire size: ${currentValue} ${lastUnit} → ${convertedValue.toFixed(2)} ${currentUnit}`);
                 }
+            } else {
+                console.log(`Skipping conversion: value=${currentValue}, lastUnit=${lastUnit}, currentUnit=${currentUnit}`);
             }
             
             // Update validation ranges for new unit
             updateTireSizeValidation(currentUnit, tireSizeEl);
             
             // Update last unit for next conversion
-            lastUnit = currentUnit;
+            this.dataset.lastUnit = currentUnit;
             
             // Recalculate
             calculate();
