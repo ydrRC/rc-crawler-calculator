@@ -447,7 +447,7 @@
                         
                         if (typeof initializeUI === 'function') {
                             console.log('Starting initialization...');
-                            // Don't call initializeUI here - let the ui.js handle it
+                            initializeUI(); // Actually call the function!
                         } else {
                             console.error('UI initialization function not found');
                             showInitializationError();
