@@ -40,6 +40,7 @@ const TRANSMISSIONS = {
     "High Altitude PS200": { front: 1.540, rear: 2.000 },
     "Hotline Performance ODD - 36(48) Spur": { front: 3.000, rear: 4.000 },
     "HPI Venture Trans & Case - 60(48) Spur": { front: 2.297, rear: 2.297 },
+	"Nordic Crawl ULV 40(48) Spur": { front: 2.860, rear: 2.860 },
     "MEUS Racing LCG-Gold Rush": { front: 2.000, rear: 2.533 },
     "Procrawler Grind 328 LCG OD": { front: 1.950, rear: 1.350 },
     "Procrawler Grind 431 LCG OD": { front: 1.833, rear: 2.500 },
