@@ -1,22 +1,35 @@
+/**
+ * RC Crawler Calculator - UI Components
+ * Handles user interface interactions and display updates
+ */
+
 function initializeUI() {
     console.log('Initializing RC Crawler Calculator UI...');
     
-    populateTransmissions();
-    populateAxles();
-    
-    setTimeout(() => {
-        setDefaults();
-        calculate();
-    }, 100);
-    
-    addEventListeners();
-    
-    console.log('UI initialization complete');
+    try {
+        populateTransmissions();
+        populateAxles();
+        
+        setTimeout(() => {
+            setDefaults();
+            calculate();
+        }, 100);
+        
+        addEventListeners();
+        
+        console.log('UI initialization complete');
+    } catch (error) {
+        console.error('UI initialization error:', error);
+        showErrorMessage('Failed to initialize calculator. Please refresh the page.');
+    }
 }
 
 function populateTransmissions() {
     const select = document.getElementById('transmission');
-    if (!select) return;
+    if (!select) {
+        console.error('Transmission select element not found');
+        return;
+    }
     
     const transmissions = getTransmissionNames();
     
@@ -38,7 +51,10 @@ function populateAxles() {
     const frontSelect = document.getElementById('frontAxle');
     const rearSelect = document.getElementById('rearAxle');
     
-    if (!frontSelect || !rearSelect) return;
+    if (!frontSelect || !rearSelect) {
+        console.error('Axle select elements not found');
+        return;
+    }
     
     const axles = getAxleNames();
     
@@ -65,20 +81,18 @@ function populateAxles() {
 }
 
 function setDefaults() {
-    const transmissionEl = document.getElementById('transmission');
-    if (transmissionEl) {
-        transmissionEl.value = 'Axial 3-Gear';
-    }
+    const defaults = {
+        transmission: 'Axial 3-Gear',
+        frontAxle: 'AR44 / AR45 / SCX Pro / Element',
+        rearAxle: 'AR44 / AR45 / SCX Pro / Element'
+    };
     
-    const frontAxleEl = document.getElementById('frontAxle');
-    if (frontAxleEl) {
-        frontAxleEl.value = 'AR44 / AR45 / SCX Pro / Element';
-    }
-    
-    const rearAxleEl = document.getElementById('rearAxle');
-    if (rearAxleEl) {
-        rearAxleEl.value = 'AR44 / AR45 / SCX Pro / Element';
-    }
+    Object.entries(defaults).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.value = value;
+        }
+    });
     
     console.log('Default values set');
 }
@@ -99,7 +113,18 @@ function addEventListeners() {
         }
     });
     
+    const exportBtn = document.getElementById('exportBtn');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', exportConfiguration);
+    }
+    
+    const importFile = document.getElementById('importFile');
+    if (importFile) {
+        importFile.addEventListener('change', handleImportFile);
+    }
+    
     setupVoltagePresetListener();
+    setupResultClickListeners();
     
     console.log('Event listeners added');
 }
@@ -125,8 +150,29 @@ function setupVoltagePresetListener() {
     }
 }
 
+function setupResultClickListeners() {
+    const resultItems = document.querySelectorAll('.result-item.clickable');
+    resultItems.forEach(item => {
+        item.addEventListener('click', () => copyToClipboard(item));
+    });
+}
+
 function calculate() {
-    const params = {
+    try {
+        const params = getCalculationParameters();
+        const results = calculator.calculateAll(params);
+        const formatted = calculator.getFormattedResults();
+        
+        updateResultsDisplay(params, results, formatted);
+        
+    } catch (error) {
+        console.error('Calculation error:', error);
+        showErrorMessage('Calculation error occurred. Please check your inputs.');
+    }
+}
+
+function getCalculationParameters() {
+    return {
         spurTeeth: parseFloat(document.getElementById('spur').value) || 0,
         pinionTeeth: parseFloat(document.getElementById('pinion').value) || 0,
         transmissionName: document.getElementById('transmission').value,
@@ -138,10 +184,9 @@ function calculate() {
         tireSize: parseFloat(document.getElementById('tireSize').value) || 0,
         tireSizeUnit: document.getElementById('tireSizeUnit').value
     };
-    
-    const results = calculator.calculateAll(params);
-    const formatted = calculator.getFormattedResults();
-    
+}
+
+function updateResultsDisplay(params, results, formatted) {
     const transmission = getTransmission(params.transmissionName);
     const frontAxleRatio = getAxle(params.frontAxleName);
     const rearAxleRatio = getAxle(params.rearAxleName);
@@ -187,6 +232,454 @@ let debounceTimer = null;
 function debounceCalculate() {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(calculate, 300);
+}
+
+function copyToClipboard(element) {
+    const valueElement = element.querySelector('.value');
+    const titleElement = element.querySelector('h3');
+    
+    if (!valueElement || !titleElement) return;
+    
+    let value = valueElement.textContent.trim();
+    const title = titleElement.textContent.trim();
+    
+    if (!value || value === '-') {
+        showCopyFeedback(element, 'No value to copy', 'error');
+        return;
+    }
+    
+    if (value.includes(':1')) {
+        value = value.split(':1')[0];
+    } else {
+        const numberMatch = value.match(/[\d,.]+/);
+        if (numberMatch) {
+            value = numberMatch[0];
+        }
+    }
+    
+    const textToCopy = value;
+    
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            showCopyFeedback(element, 'Copied!', 'success');
+        }).catch(() => {
+            fallbackCopyToClipboard(textToCopy, element);
+        });
+    } else {
+        fallbackCopyToClipboard(textToCopy, element);
+    }
+}
+
+function fallbackCopyToClipboard(text, element) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            showCopyFeedback(element, 'Copied!', 'success');
+        } else {
+            showCopyFeedback(element, 'Copy failed', 'error');
+        }
+    } catch (err) {
+        showCopyFeedback(element, 'Copy not supported', 'error');
+    }
+    
+    document.body.removeChild(textArea);
+}
+
+function showCopyFeedback(element, message, type) {
+    element.classList.add('copied');
+    
+    const feedback = document.createElement('div');
+    feedback.textContent = message;
+    feedback.style.cssText = `
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: ${type === 'success' ? '#4CAF50' : '#f44336'};
+        color: white;
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: bold;
+        z-index: 1000;
+        pointer-events: none;
+        animation: fadeInOut 1.5s ease-out forwards;
+    `;
+    
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    element.style.position = 'relative';
+    element.appendChild(feedback);
+    
+    setTimeout(() => {
+        element.classList.remove('copied');
+        if (feedback.parentNode) {
+            feedback.parentNode.removeChild(feedback);
+        }
+        if (style.parentNode) {
+            style.parentNode.removeChild(style);
+        }
+    }, 1500);
+}
+
+function exportConfiguration() {
+    try {
+        console.log('Starting export...');
+        
+        const config = getFormConfiguration();
+        const results = calculator.calculateAll({
+            spurTeeth: parseFloat(config.spur) || 0,
+            pinionTeeth: parseFloat(config.pinion) || 0,
+            transmissionName: config.transmission,
+            frontAxleName: config.frontAxle,
+            rearAxleName: config.rearAxle,
+            reverseTransmission: config.reverseTransmission,
+            motorKV: parseFloat(config.motorKV) || 0,
+            maxVoltage: parseFloat(config.maxVoltage) || 0,
+            tireSize: parseFloat(config.tireSize) || 0,
+            tireSizeUnit: config.tireSizeUnit
+        });
+        
+        let content = createExportContent(config, results);
+        
+        if (typeof addVersionToExport === 'function') {
+            content = addVersionToExport(content);
+        }
+        
+        downloadFile(content, `crawler-config-${new Date().toISOString().slice(0, 10)}.txt`);
+        
+        showExportFeedback();
+        console.log('Configuration exported successfully');
+        
+    } catch (error) {
+        console.error('Export error:', error);
+        showErrorMessage('Error exporting configuration. Please try again.');
+    }
+}
+
+function getFormConfiguration() {
+    const getElementValue = (id, defaultValue = '') => {
+        const element = document.getElementById(id);
+        return element ? element.value : defaultValue;
+    };
+    
+    const getElementChecked = (id, defaultValue = false) => {
+        const element = document.getElementById(id);
+        return element ? element.checked : defaultValue;
+    };
+    
+    return {
+        pinion: getElementValue('pinion'),
+        spur: getElementValue('spur'),
+        transmission: getElementValue('transmission'),
+        frontAxle: getElementValue('frontAxle'),
+        rearAxle: getElementValue('rearAxle'),
+        reverseTransmission: getElementChecked('reverseTransmission'),
+        motorKV: getElementValue('motorKV'),
+        voltagePreset: getElementValue('voltagePreset'),
+        maxVoltage: getElementValue('maxVoltage'),
+        tireSize: getElementValue('tireSize'),
+        tireSizeUnit: getElementValue('tireSizeUnit')
+    };
+}
+
+function createExportContent(config, results) {
+    const timestamp = new Date().toLocaleString();
+    const formatted = calculator.getFormattedResults();
+    
+    let voltagePresetText = 'Custom';
+    const voltagePresetEl = document.getElementById('voltagePreset');
+    if (voltagePresetEl && voltagePresetEl.selectedIndex >= 0) {
+        const selectedOption = voltagePresetEl.options[voltagePresetEl.selectedIndex];
+        if (selectedOption && selectedOption.text && config.voltagePreset) {
+            voltagePresetText = selectedOption.text;
+        }
+    }
+    
+    return `===============================================
+         RC CRAWLER GEAR RATIO CALCULATOR
+                 ydrRC Configuration
+===============================================
+Export Date: ${timestamp}
+
+DRIVETRAIN CONFIGURATION:
+========================
+Pinion Gear:           ${config.pinion} teeth
+Spur Gear:             ${config.spur} teeth
+Transmission:          ${config.transmission}
+Front Axle:            ${config.frontAxle}
+Rear Axle:             ${config.rearAxle}
+Reverse Transmission:  ${config.reverseTransmission ? 'YES' : 'NO'}
+
+POWER SYSTEM:
+=============
+Motor KV:              ${config.motorKV}
+Voltage Preset:        ${voltagePresetText}
+Max Voltage:           ${config.maxVoltage}V
+Tire Size:             ${config.tireSize} ${config.tireSizeUnit}
+
+CALCULATED RESULTS:
+==================
+Motor Gear Ratio:      ${formatted.motorRatio}
+Final Front Ratio:     ${formatted.finalFrontRatio}
+Final Rear Ratio:      ${formatted.finalRearRatio}
+Overdrive Percentage:  ${formatted.overdrivePercentage}
+Approx. Front Speed:   ${formatted.frontSpeed}
+Approx. Rear Speed:    ${formatted.rearSpeed}
+
+CONFIGURATION DATA (DO NOT EDIT):
+=================================
+CONFIG_START
+pinion=${config.pinion}
+spur=${config.spur}
+transmission=${config.transmission}
+frontAxle=${config.frontAxle}
+rearAxle=${config.rearAxle}
+reverseTransmission=${config.reverseTransmission}
+motorKV=${config.motorKV}
+voltagePreset=${config.voltagePreset}
+maxVoltage=${config.maxVoltage}
+tireSize=${config.tireSize}
+tireSizeUnit=${config.tireSizeUnit}
+CONFIG_END
+
+===============================================
+Generated by ydrRC Crawler Calculator
+===============================================`;
+}
+
+function downloadFile(content, filename) {
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function showExportFeedback() {
+    const exportBtn = document.getElementById('exportBtn');
+    if (exportBtn) {
+        const originalText = exportBtn.textContent;
+        exportBtn.textContent = 'Exported!';
+        exportBtn.style.backgroundColor = '#28a745';
+        setTimeout(() => {
+            exportBtn.textContent = originalText;
+            exportBtn.style.backgroundColor = '#000000';
+        }, 2000);
+    }
+}
+
+function handleImportFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    console.log('Importing file:', file.name);
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const content = e.target.result;
+            const config = parseImportContent(content);
+            
+            if (config && Object.keys(config).length > 0) {
+                applyImportedConfig(config);
+                showImportFeedback('Configuration imported successfully!', 'success');
+                setTimeout(calculate, 100);
+            } else {
+                showImportFeedback('Could not find valid configuration data in file', 'error');
+            }
+        } catch (error) {
+            console.error('Import error:', error);
+            showImportFeedback('Error: ' + error.message, 'error');
+        }
+        
+        event.target.value = '';
+    };
+    
+    reader.onerror = function() {
+        showImportFeedback('Failed to read file', 'error');
+        event.target.value = '';
+    };
+    
+    reader.readAsText(file);
+}
+
+function parseImportContent(content) {
+    console.log('Parsing import content...');
+    
+    const configStart = content.indexOf('CONFIG_START');
+    const configEnd = content.indexOf('CONFIG_END');
+    
+    if (configStart === -1 || configEnd === -1) {
+        const lines = content.split('\n');
+        const config = {};
+        let foundAny = false;
+        
+        const knownKeys = [
+            'pinion', 'spur', 'transmission', 'frontAxle', 'rearAxle', 
+            'reverseTransmission', 'motorKV', 'voltagePreset', 'maxVoltage', 
+            'tireSize', 'tireSizeUnit'
+        ];
+        
+        for (const line of lines) {
+            const trimmed = line.trim();
+            if (trimmed.includes('=') && !trimmed.startsWith('#') && !trimmed.startsWith('=')) {
+                const parts = trimmed.split('=');
+                if (parts.length >= 2) {
+                    const key = parts[0].trim();
+                    const value = parts.slice(1).join('=').trim();
+                    
+                    if (knownKeys.includes(key)) {
+                        if (value === 'true') {
+                            config[key] = true;
+                        } else if (value === 'false') {
+                            config[key] = false;
+                        } else {
+                            config[key] = value;
+                        }
+                        foundAny = true;
+                    }
+                }
+            }
+        }
+        
+        return foundAny ? config : null;
+    }
+    
+    const configSection = content.substring(configStart + 12, configEnd).trim();
+    const config = {};
+    const lines = configSection.split('\n');
+    
+    for (const line of lines) {
+        const trimmed = line.trim();
+        if (trimmed && trimmed.includes('=')) {
+            const equalPos = trimmed.indexOf('=');
+            const key = trimmed.substring(0, equalPos).trim();
+            const value = trimmed.substring(equalPos + 1).trim();
+            
+            if (key) {
+                if (value === 'true') {
+                    config[key] = true;
+                } else if (value === 'false') {
+                    config[key] = false;
+                } else {
+                    config[key] = value;
+                }
+            }
+        }
+    }
+    
+    return config;
+}
+
+function applyImportedConfig(config) {
+    console.log('Applying imported config:', config);
+    
+    const setValue = (id, value) => {
+        const element = document.getElementById(id);
+        if (element && value !== undefined && value !== null && value !== '') {
+            element.value = value;
+            return true;
+        }
+        return false;
+    };
+    
+    const setChecked = (id, checked) => {
+        const element = document.getElementById(id);
+        if (element && checked !== undefined && checked !== null) {
+            element.checked = checked;
+            return true;
+        }
+        return false;
+    };
+    
+    setValue('pinion', config.pinion);
+    setValue('spur', config.spur);
+    setValue('transmission', config.transmission);
+    setValue('frontAxle', config.frontAxle);
+    setValue('rearAxle', config.rearAxle);
+    setChecked('reverseTransmission', config.reverseTransmission);
+    setValue('motorKV', config.motorKV);
+    setValue('voltagePreset', config.voltagePreset);
+    setValue('maxVoltage', config.maxVoltage);
+    setValue('tireSize', config.tireSize);
+    setValue('tireSizeUnit', config.tireSizeUnit);
+    
+    const voltagePreset = document.getElementById('voltagePreset');
+    const maxVoltage = document.getElementById('maxVoltage');
+    
+    if (voltagePreset && maxVoltage) {
+        if (config.voltagePreset && config.voltagePreset !== '') {
+            maxVoltage.disabled = true;
+            maxVoltage.style.backgroundColor = '#e9ecef';
+            maxVoltage.style.cursor = 'not-allowed';
+        } else {
+            maxVoltage.disabled = false;
+            maxVoltage.style.backgroundColor = 'white';
+            maxVoltage.style.cursor = 'text';
+        }
+    }
+}
+
+function showImportFeedback(message, type) {
+    const feedback = document.createElement('div');
+    feedback.textContent = message;
+    feedback.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? '#4CAF50' : '#f44336'};
+        color: white;
+        padding: 15px 20px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: bold;
+        z-index: 10000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        animation: slideInRight 0.3s ease-out;
+    `;
+    
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    `;
+    document.head.appendChild(style);
+    document.body.appendChild(feedback);
+    
+    setTimeout(() => {
+        if (feedback.parentNode) feedback.parentNode.removeChild(feedback);
+        if (style.parentNode) style.parentNode.removeChild(style);
+    }, 3000);
+}
+
+function showErrorMessage(message) {
+    console.error(message);
+    showImportFeedback(message, 'error');
 }
 
 document.addEventListener('DOMContentLoaded', function() {
