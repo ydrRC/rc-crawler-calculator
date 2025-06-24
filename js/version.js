@@ -6,8 +6,8 @@
 // Application version configuration
 const APP_VERSION = {
     major: 2,
-    minor: 1,
-    patch: 1,
+    minor: 2,
+    patch: 0,
     build: 'June 2025',
     releaseDate: '2025-06-24',
     
@@ -32,6 +32,13 @@ const APP_VERSION = {
 // Version history for tracking changes
 const VERSION_HISTORY = [
     {
+        version: '2.2.0',
+        date: '2025-06-24',
+        changes: [
+            'Added comparison tool',
+            'Added km/h to speed calculations'            
+        ]
+    },{
         version: '2.1.0',
         date: '2025-06-24',
         changes: [
