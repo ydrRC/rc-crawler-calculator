@@ -193,7 +193,7 @@ class CrawlerCalculator {
      */
     formatSpeed(speed) {
         if (!speed || speed === 0) return '-';
-        return `${speed.toFixed(2)} MPH`;
+        return formatSpeedDisplay(speed);
     }
 
     /**

@@ -17,11 +17,6 @@ function initializeUI() {
         
         addEventListeners();
         
-        // Initialize comparison feature
-        setTimeout(() => {
-            initializeComparisonFeature();
-        }, 200);
-        
         console.log('UI initialization complete');
     } catch (error) {
         console.error('UI initialization error:', error);
@@ -744,4 +739,7 @@ function showErrorMessage(message) {
     showImportFeedback(message, 'error');
 }
 
-// ===
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing calculator...');
+    initializeUI();
+});
