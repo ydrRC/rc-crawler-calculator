@@ -6,8 +6,8 @@
 const TRANSMISSIONS = {
     "Axial 3-Gear": { front: 2.600, rear: 2.600 },
     "Axial Capra - 34(32) Spur": { front: 1.800, rear: 1.800 },
-    "Axial Capra UTB18 40 (48) Spur": { front: 3.825, rear: 3.825 },
-    "Axial Capra UTB18 [TGH] 42 (48) Spur": { front: 3.825, rear: 3.825 },
+    "Axial Capra UTB18 40(48) Spur": { front: 3.825, rear: 3.825 },
+    "Axial Capra UTB18 [TGH] 42(48) Spur": { front: 3.825, rear: 3.825 },
     "Axial LCXU (Basecamp) - Portal": { front: 1.643, rear: 1.643 },
     "Axial LCXU (Basecamp) - Straight": { front: 2.614, rear: 2.614 },
     "Axial SCX10 Pro - 0% OD": { front: 2.222, rear: 2.222 },
