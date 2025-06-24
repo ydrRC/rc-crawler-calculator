@@ -201,18 +201,33 @@
     <script>
         // Check if files are loading properly and provide fallback
         let filesLoaded = 0;
-        const totalFiles = 4; // Updated for version.js
+        const totalFiles = 4;
         
         function checkInitialization() {
             filesLoaded++;
+            console.log(`File ${filesLoaded}/${totalFiles} loaded`);
+            
             if (filesLoaded === totalFiles) {
-                // All files loaded, try to initialize
-                if (typeof initializeUI === 'function') {
-                    console.log('All files loaded successfully, initializing...');
-                } else {
-                    console.error('UI initialization function not found');
-                    showInitializationError();
-                }
+                // Small delay to ensure all functions are available
+                setTimeout(() => {
+                    try {
+                        console.log('All files loaded, checking functions...');
+                        console.log('initializeUI available:', typeof initializeUI);
+                        console.log('getTransmissionNames available:', typeof getTransmissionNames);
+                        console.log('calculator available:', typeof calculator);
+                        
+                        if (typeof initializeUI === 'function') {
+                            console.log('Starting initialization...');
+                            // Don't call initializeUI here - let the ui.js handle it
+                        } else {
+                            console.error('UI initialization function not found');
+                            showInitializationError();
+                        }
+                    } catch (error) {
+                        console.error('Error during initialization check:', error);
+                        showInitializationError();
+                    }
+                }, 100);
             }
         }
         
@@ -237,29 +252,25 @@
                             </ul>
                         </li>
                         <li><strong>Check file structure:</strong> Ensure all JS files exist in the <code>js/</code> folder</li>
-                        <li><strong>Alternative:</strong> <a href="#" onclick="useEmbeddedVersion()">Use embedded version</a> (single file)</li>
+                        <li><strong>Alternative:</strong> Use the embedded version (single file)</li>
                     </ol>
                 </div>
             `;
         }
         
-        function useEmbeddedVersion() {
-            window.location.reload();
-            // This would redirect to a version with embedded JavaScript
-        }
-        
         // Set a timeout to show error if files don't load
         setTimeout(() => {
             if (filesLoaded < totalFiles) {
-                console.error('Timeout: Not all JavaScript files loaded');
+                console.error(`Timeout: Only ${filesLoaded}/${totalFiles} JavaScript files loaded`);
                 showInitializationError();
             }
         }, 5000);
     </script>
     
-    <script src="js/version.js" onload="checkInitialization()" onerror="console.error('Failed to load version.js'); showInitializationError();"></script>
+    <!-- Load files in correct order -->
     <script src="js/data.js" onload="checkInitialization()" onerror="console.error('Failed to load data.js'); showInitializationError();"></script>
     <script src="js/calculator.js" onload="checkInitialization()" onerror="console.error('Failed to load calculator.js'); showInitializationError();"></script>
+    <script src="js/version.js" onload="checkInitialization()" onerror="console.error('Failed to load version.js'); showInitializationError();"></script>
     <script src="js/ui.js" onload="checkInitialization()" onerror="console.error('Failed to load ui.js'); showInitializationError();"></script>
 </body>
 </html>

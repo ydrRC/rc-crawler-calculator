@@ -1,857 +1,508 @@
 /**
- * RC Crawler Calculator - UI Components
- * Handles user interface interactions and display updates
+ * RC Crawler Calculator - Data Components
+ * Contains transmission and axle data for gear ratio calculations
  */
 
+// Transmission data with front and rear output ratios
+const TRANSMISSIONS = {
+    "Axial 3-Gear": { front: 2.600, rear: 2.600 },
+    "Axial Capra - 34(32) Spur": { front: 1.800, rear: 1.800 },
+    "Axial Capra UTB18 40 (48) Spur": { front: 3.825, rear: 3.825 },
+    "Axial Capra UTB18 [TGH] 42 (48) Spur": { front: 3.825, rear: 3.825 },
+    "Axial LCXU (Basecamp) - Portal": { front: 1.643, rear: 1.643 },
+    "Axial LCXU (Basecamp) - Straight": { front: 2.614, rear: 2.614 },
+    "Axial SCX10 Pro - 0% OD": { front: 2.222, rear: 2.222 },
+    "Axial SCX10 Pro - 40% OD": { front: 2.222, rear: 3.322 },
+    "Axial SCX10.3 Portal high 40(32) Spur": { front: 1.520, rear: 1.520 },
+    "Axial SCX10.3 Portal low 40(32) Spur": { front: 2.220, rear: 2.220 },
+    "Axial SCX10.3 Straight high 40(32) Spur": { front: 2.590, rear: 2.590 },
+    "Axial SCX10.3 Straight low 40(32) Spur": { front: 3.780, rear: 3.780 },
+    "Axial Yeti / RR10": { front: 1.939, rear: 1.939 },
+    "CCW Hidden Ninja": { front: 2.860, rear: 3.600 },
+    "Dlux Cheez Berger 17% OD - 48(48) Spur": { front: 3.373, rear: 4.000 },
+    "Dlux Cheez Berger No OD - 48(48) Spur": { front: 4.000, rear: 4.000 },
+    "Dlux Fargo 36(48) Spur": { front: 9.000, rear: 9.000 },
+    "Dlux Ham Berger - 48(48) Spur": { front: 5.000, rear: 5.000 },
+    "Dlux NOD-2 - 44(48) Spur": { front: 4.000, rear: 4.000 },
+    "Dlux OD-3 - 44(48) Spur": { front: 3.660, rear: 4.411 },
+    "Dlux OD-3 NO OD - 44(48) Spur": { front: 3.667, rear: 3.667 },
+    "Dlux OD-4 - 36(48) Spur": { front: 3.000, rear: 4.000 },
+    "Dlux Portal - 36(48) Spur": { front: 3.000, rear: 3.000 },
+    "Dlux Slider - 48(48) Spur": { front: 5.000, rear: 5.000 },
+    "Element Stealth KNK": { front: 2.600, rear: 3.267 },
+    "Element Stealth No OD": { front: 2.600, rear: 2.600 },
+    "Element Stealth Opt 1": { front: 2.600, rear: 2.748 },
+    "Element Stealth Opt 2": { front: 2.600, rear: 2.908 },
+    "Exo Alpinist 0% - 36(48) Spur": { front: 4.910, rear: 4.910 },
+    "Exo Alpinist 28% - 36(48) Spur": { front: 4.910, rear: 6.540 },
+    "Exo Boulderer - 36(48) Spur": { front: 4.000, rear: 4.000 },
+    "Exo Trad Climber Alpinist - 36(48) Spur": { front: 4.910, rear: 4.910 },
+    "Exo Twin Rope Dual Motor": { front: 4.000, rear: 4.000 },
+    "High Altitude PS200": { front: 1.540, rear: 2.000 },
+    "Hotline Performance ODD - 36(48) Spur": { front: 3.000, rear: 4.000 },
+    "HPI Venture Trans & Case - 60(48) Spur": { front: 2.297, rear: 2.297 },
+    "MEUS Racing LCG-Gold Rush": { front: 2.000, rear: 2.533 },
+    "Procrawler Grind 328 LCG OD": { front: 1.950, rear: 1.350 },
+    "Procrawler Grind 431 LCG OD": { front: 1.833, rear: 2.500 },
+    "Salinas Mullet": { front: 2.294, rear: 1.706 },
+    "Reefs XPT3 LCG - 36(48) Spur": { front: 3.750, rear: 3.750 },
+    "Salinas ODT V1 (High)": { front: 1.529, rear: 2.647 },
+    "Salinas ODT V1 (Low)": { front: 1.706, rear: 2.294 },
+    "Salinas ODT V1 (Med)": { front: 1.706, rear: 2.647 },
+    "Supershafty SS-F6 0%": { front: 1.929, rear: 1.929 },
+    "Supershafty SS-F6 18%": { front: 1.929, rear: 2.330 },
+    "Supershafty SS-F6 26%": { front: 1.929, rear: 2.505 },
+    "TGH 2.LOW": { front: 1.940, rear: 2.650 },
+    "TGH Creeper-T": { front: 1.900, rear: 2.600 },
+    "TGH O.G.": { front: 1.920, rear: 1.920 },
+    "TGH O.G. OD": { front: 1.660, rear: 1.900 },
+    "TGH T-210 - 26(32) Spur": { front: 5.138, rear: 7.007 },
+    "ToyZuki 2.5 Transfercase": { front: 1.800, rear: 2.600 },
+    "ToyZuki V1 Transfercase": { front: 2.600, rear: 2.600 },
+    "Traxxas TRX-4 High Gear": { front: 0.800, rear: 0.800 },
+    "Traxxas TRX-4 Low Gear": { front: 2.000, rear: 2.000 },
+    "Traxxas TRX-4 Sport": { front: 2.000, rear: 2.000 },
+    "VP VFD OD (21%)": { front: 2.560, rear: 3.150 },
+    "VP VFD Twin High (46%)": { front: 1.966, rear: 3.150 },
+    "VP VFD/VFD Twin Low (6.5%)": { front: 2.950, rear: 3.150 }
+};
+
+// Axle data with gear ratios
+const AXLES = {
+    "AR44 / AR45 / SCX Pro OD2": 3.000,
+    "AR44 / AR45 / SCX Pro OD1": 3.375,
+    "AR44 / AR45 / SCX Pro / Element": 3.750,
+    "AR44 / AR45 / SCX Pro UD": 4.125,
+    "AR45P / Capra / SCX Pro Portal OD2 (12/23)": 5.750,
+    "AR45P / Capra / SCX Pro Portal OD1 (12/23)": 6.469,
+    "AR45P / Capra / SCX Pro Portal (12/23)": 7.188,
+    "AR45P / Capra / SCX Pro Portal UD (12/23)": 7.906,
+    "AR45P / Capra / SCX Pro Portal OD2 (13/22)": 5.077,
+    "AR45P / Capra / SCX Pro Portal OD1 (13/22)": 5.712,
+    "AR45P / Capra / SCX Pro Portal (13/22)": 6.346,
+    "AR45P / Capra / SCX Pro Portal UD (13/22)": 6.981,
+    "AR45P / Capra / SCX Pro Portal OD2 (14/21)": 4.500,
+    "AR45P / Capra / SCX Pro Portal OD1 (14/21)": 5.063,
+    "AR45P / Capra / SCX Pro Portal (14/21)": 5.625,
+    "AR45P / Capra / SCX Pro Portal UD (14/21)": 6.188,
+    "AR45P / Capra / SCX Pro Portal OD2 (15/20)": 4.000,
+    "AR45P / Capra / SCX Pro Portal OD1 (15/20)": 4.500,
+    "AR45P / Capra / SCX Pro Portal (15/20)": 5.000,
+    "AR45P / Capra / SCX Pro Portal UD (15/20)": 5.500,
+    "AR45P / Capra / SCX Pro Portal OD2 (16/19)": 3.563,
+    "AR45P / Capra / SCX Pro Portal OD1 (16/19)": 4.008,
+    "AR45P / Capra / SCX Pro Portal (16/19)": 4.453,
+    "AR45P / Capra / SCX Pro Portal UD (16/19)": 4.898,
+    "AR60 OD": 2.571,
+    "AR60 STD": 2.923,
+    "AR60 UD": 3.308,
+    "AR60P OD (12/23)": 4.929,
+    "AR60P STD (12/23)": 5.603,
+    "AR60P UD (12/23)": 6.340,
+    "AR60P OD (13/22": 4.352,
+    "AR60P STD (13/22)": 4.947,
+    "AR60P UD (13/22)": 5.598,
+    "AR60P OD (14/21)": 3.857,
+    "AR60P STD (14/21)": 4.385,
+    "AR60P UD (14/21)": 4.962,
+    "AR60P OD (15/20)": 3.429,
+    "AR60P STD (15/20)": 3.897,
+    "AR60P UD (15/20)": 4.410,
+    "AR60P OD (16/19)": 3.054,
+    "AR60P STD (16/19)": 3.471,
+    "AR60P UD (16/19)": 3.928,
+    "Axial AF16P STD (12/29)": 7.994,
+    "Axial AF16P STD (13/28)": 7.124,
+    "Axial AF16P STD (14/27)": 6.379,
+    "Axial AF16P OD (12/29)": 7.064,
+    "Axial AF16P OD (13/28)": 6.296,
+    "Axial AF16P OD (14/27)": 5.637,
+    "Dlux Superlite LOW": 14.286,
+    "Dlux Superlite STD": 11.429,
+    "Dlux SLP LOW (12/23)": 27.382,
+    "Dlux SLP STD (12/23)": 21.906,
+    "Dlux SLP LOW (15/20)": 19.048,
+    "Dlux SLP STD (15/20)": 15.239,
+    "Element IFS with SSD Portal (14/16)": 4.286,
+    "Element IFS with SSD Portal (16/14)": 3.281,
+    "Element Portal (15/20)": 5.500,
+    "Element Portal (12/23)": 7.906,
+    "HPI Venture": 3.308,
+    "MEUS Racing Nylon Portal OD2 (20/28)": 4.200,
+    "MEUS Racing Nylon Portal OD1 (20/28)": 4.725,
+    "MEUS Racing Nylon Portal (20/28)": 5.250,
+    "MEUS Racing Nylon Portal UD (20/28)": 5.775,
+    "TRX-4 OD": 7.028,
+    "TRX-4 STD": 7.899,
+    "TRX-4 UD": 8.944,
+    "UTB18 STD (13/28) Dlux": 5.467,
+    "UTB18 STD (14/27) TGH": 4.896,
+    "UTB18 STD (15/26) STK": 4.400,
+    "UTB18 STD (16/25) Treal": 3.966,
+    "UTB18 STD (17/24) Treal": 3.584,
+    "UTB18 OD (13/28) Dlux": 4.639,
+    "UTB18 OD (14/27) TGH": 4.154,
+    "UTB18 OD (15/26) STK": 3.733,
+    "UTB18 OD (16/25) Treal": 3.365,
+    "UTB18 OD (17/24) Treal": 3.041,
+    "VP Portal OD2 (18/30)": 5.000,
+    "VP Portal OD1 (18/30)": 5.625,
+    "VP Portal (18/30)": 6.250,
+    "VP Portal UD (18/30)": 6.875,
+    "VP Portal OD2 (20/28)": 4.200,
+    "VP Portal OD1 (20/28)": 4.725,
+    "VP Portal (20/28)": 5.250,
+    "VP Portal UD (20/28)": 5.775
+};
+
 /**
- * Initialize the calculator UI
+ * Get sorted list of transmission names
+ * @returns {Array} Sorted transmission names
  */
-function initializeUI() {
-    console.log('Initializing RC Crawler Calculator UI...');
-    
-    try {
-        populateTransmissions();
-        populateAxles();
-        
-        // Set defaults after population
-        setTimeout(() => {
-            setDefaults();
-            calculate();
-        }, 100);
-        
-        addEventListeners();
-        
-        console.log('UI initialization complete');
-    } catch (error) {
-        console.error('UI initialization error:', error);
-        showErrorMessage('Failed to initialize calculator. Please refresh the page.');
+function getTransmissionNames() {
+    return Object.keys(TRANSMISSIONS).sort();
+}
+
+/**
+ * Get sorted list of axle names
+ * @returns {Array} Sorted axle names
+ */
+function getAxleNames() {
+    return Object.keys(AXLES).sort();
+}
+
+/**
+ * Get transmission data by name
+ * @param {string} name - Transmission name
+ * @returns {Object|null} Transmission data or null if not found
+ */
+function getTransmission(name) {
+    return TRANSMISSIONS[name] || null;
+}
+
+/**
+ * Get axle ratio by name
+ * @param {string} name - Axle name
+ * @returns {number|null} Axle ratio or null if not found
+ */
+function getAxle(name) {
+    return AXLES[name] || null;
+}
+
+/**
+ * Add new transmission to the database
+ * @param {string} name - Transmission name
+ * @param {Object} ratios - Front and rear ratios
+ * @param {number} ratios.front - Front output ratio
+ * @param {number} ratios.rear - Rear output ratio
+ */
+function addTransmission(name, ratios) {
+    if (typeof ratios.front === 'number' && typeof ratios.rear === 'number') {
+        TRANSMISSIONS[name] = { front: ratios.front, rear: ratios.rear };
+        return true;
     }
+    return false;
 }
 
 /**
- * Populate transmission dropdown
+ * Add new axle to the database
+ * @param {string} name - Axle name
+ * @param {number} ratio - Axle gear ratio
  */
-function populateTransmissions() {
-    const select = document.getElementById('transmission');
-    if (!select) {
-        console.error('Transmission select element not found');
-        return;
+function addAxle(name, ratio) {
+    if (typeof ratio === 'number' && ratio > 0) {
+        AXLES[name] = ratio;
+        return true;
     }
-    
-    const transmissions = getTransmissionNames();
-    
-    // Clear existing options except the first one
-    while (select.children.length > 1) {
-        select.removeChild(select.lastChild);
-    }
-    
-    transmissions.forEach(transmission => {
-        const option = document.createElement('option');
-        option.value = transmission;
-        option.textContent = transmission;
-        select.appendChild(option);
-    });
-    
-    console.log(`Populated ${transmissions.length} transmissions`);
+    return false;
 }
 
 /**
- * Populate axle dropdowns
+ * Search transmissions by keyword
+ * @param {string} keyword - Search keyword
+ * @returns {Array} Matching transmission names
  */
-function populateAxles() {
-    const frontSelect = document.getElementById('frontAxle');
-    const rearSelect = document.getElementById('rearAxle');
-    
-    if (!frontSelect || !rearSelect) {
-        console.error('Axle select elements not found');
-        return;
-    }
-    
-    const axles = getAxleNames();
-    
-    // Clear existing options except the first one
-    while (frontSelect.children.length > 1) {
-        frontSelect.removeChild(frontSelect.lastChild);
-    }
-    while (rearSelect.children.length > 1) {
-        rearSelect.removeChild(rearSelect.lastChild);
-    }
-    
-    axles.forEach(axle => {
-        const frontOption = document.createElement('option');
-        frontOption.value = axle;
-        frontOption.textContent = axle;
-        frontSelect.appendChild(frontOption);
-        
-        const rearOption = document.createElement('option');
-        rearOption.value = axle;
-        rearOption.textContent = axle;
-        rearSelect.appendChild(rearOption);
-    });
-    
-    console.log(`Populated ${axles.length} axles`);
+function searchTransmissions(keyword) {
+    const lowercaseKeyword = keyword.toLowerCase();
+    return Object.keys(TRANSMISSIONS).filter(name => 
+        name.toLowerCase().includes(lowercaseKeyword)
+    );
 }
 
 /**
- * Set default values for the form
+ * Search axles by keyword
+ * @param {string} keyword - Search keyword
+ * @returns {Array} Matching axle names
  */
-function setDefaults() {
-    const defaults = {
-        transmission: 'Axial 3-Gear',
-        frontAxle: 'AR44 / AR45 / SCX Pro / Element',
-        rearAxle: 'AR44 / AR45 / SCX Pro / Element'
-    };
-    
-    Object.entries(defaults).forEach(([id, value]) => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.value = value;
-        }
-    });
-    
-    console.log('Default values set');
+function searchAxles(keyword) {
+    const lowercaseKeyword = keyword.toLowerCase();
+    return Object.keys(AXLES).filter(name => 
+        name.toLowerCase().includes(lowercaseKeyword)
+    );
 }
 
 /**
- * Add event listeners to form elements
+ * Get transmissions by manufacturer
+ * @param {string} manufacturer - Manufacturer name (e.g., "Axial", "Dlux")
+ * @returns {Array} Transmissions from specified manufacturer
  */
-function addEventListeners() {
-    const inputs = [
-        'pinion', 'spur', 'transmission', 'frontAxle', 'rearAxle', 
-        'reverseTransmission', 'motorKV', 'maxVoltage', 'tireSize', 'tireSizeUnit'
-    ];
-    
-    inputs.forEach(id => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.addEventListener('change', calculate);
-            if (element.type !== 'select-one' && element.type !== 'checkbox') {
-                element.addEventListener('input', debounceCalculate);
-            }
-        }
-    });
-    
-    // Add export button listener
-    const exportBtn = document.getElementById('exportBtn');
-    if (exportBtn) {
-        exportBtn.addEventListener('click', exportConfiguration);
-    }
-    
-    // Add import file listener
-    const importFile = document.getElementById('importFile');
-    if (importFile) {
-        importFile.addEventListener('change', handleImportFile);
-    }
-    
-    // Add voltage preset listener
-    setupVoltagePresetListener();
-    
-    // Add result click listeners for copy functionality
-    setupResultClickListeners();
-    
-    console.log('Event listeners added');
+function getTransmissionsByManufacturer(manufacturer) {
+    const lowercaseManufacturer = manufacturer.toLowerCase();
+    return Object.keys(TRANSMISSIONS).filter(name => 
+        name.toLowerCase().startsWith(lowercaseManufacturer)
+    );
 }
 
 /**
- * Setup voltage preset functionality
+ * Get axles by manufacturer
+ * @param {string} manufacturer - Manufacturer name (e.g., "AR44", "TRX-4")
+ * @returns {Array} Axles from specified manufacturer
  */
-function setupVoltagePresetListener() {
-    const voltagePresetEl = document.getElementById('voltagePreset');
-    const maxVoltageEl = document.getElementById('maxVoltage');
-    
-    if (voltagePresetEl && maxVoltageEl) {
-        voltagePresetEl.addEventListener('change', function() {
-            if (this.value) {
-                maxVoltageEl.value = this.value;
-                maxVoltageEl.disabled = true;
-                maxVoltageEl.style.backgroundColor = '#e9ecef';
-                maxVoltageEl.style.cursor = 'not-allowed';
-            } else {
-                maxVoltageEl.disabled = false;
-                maxVoltageEl.style.backgroundColor = 'white';
-                maxVoltageEl.style.cursor = 'text';
-            }
-            calculate();
-        });
-    }
+function getAxlesByManufacturer(manufacturer) {
+    const lowercaseManufacturer = manufacturer.toLowerCase();
+    return Object.keys(AXLES).filter(name => 
+        name.toLowerCase().includes(lowercaseManufacturer)
+    );
 }
 
 /**
- * Setup click listeners for result items (copy functionality)
+ * Validate transmission data
+ * @param {Object} transmission - Transmission object
+ * @returns {boolean} True if valid
  */
-function setupResultClickListeners() {
-    const resultItems = document.querySelectorAll('.result-item.clickable');
-    resultItems.forEach(item => {
-        item.addEventListener('click', () => copyToClipboard(item));
-    });
+function validateTransmission(transmission) {
+    return transmission && 
+           typeof transmission.front === 'number' && 
+           typeof transmission.rear === 'number' &&
+           transmission.front > 0 && 
+           transmission.rear > 0;
 }
 
 /**
- * Main calculation function
+ * Validate axle ratio
+ * @param {number} ratio - Axle ratio
+ * @returns {boolean} True if valid
  */
-function calculate() {
-    try {
-        const params = getCalculationParameters();
-        const results = calculator.calculateAll(params);
-        const formatted = calculator.getFormattedResults();
-        
-        updateResultsDisplay(params, results, formatted);
-        
-    } catch (error) {
-        console.error('Calculation error:', error);
-        showErrorMessage('Calculation error occurred. Please check your inputs.');
-    }
+function validateAxleRatio(ratio) {
+    return typeof ratio === 'number' && ratio > 0;
 }
 
-/**
- * Get calculation parameters from form
- * @returns {Object} Calculation parameters
- */
-function getCalculationParameters() {
-    return {
-        spurTeeth: parseFloat(document.getElementById('spur').value) || 0,
-        pinionTeeth: parseFloat(document.getElementById('pinion').value) || 0,
-        transmissionName: document.getElementById('transmission').value,
-        frontAxleName: document.getElementById('frontAxle').value,
-        rearAxleName: document.getElementById('rearAxle').value,
-        reverseTransmission: document.getElementById('reverseTransmission').checked,
-        motorKV: parseFloat(document.getElementById('motorKV').value) || 0,
-        maxVoltage: parseFloat(document.getElementById('maxVoltage').value) || 0,
-        tireSize: parseFloat(document.getElementById('tireSize').value) || 0,
-        tireSizeUnit: document.getElementById('tireSizeUnit').value
-    };
-}
-
-/**
- * Update the results display
- * @param {Object} params - Calculation parameters
- * @param {Object} results - Raw calculation results
- * @param {Object} formatted - Formatted results
- */
-function updateResultsDisplay(params, results, formatted) {
-    const transmission = getTransmission(params.transmissionName);
-    const frontAxleRatio = getAxle(params.frontAxleName);
-    const rearAxleRatio = getAxle(params.rearAxleName);
-    
-    // Update individual result elements
-    updateElement('motorRatio', formatted.motorRatio);
-    updateTransmissionRatio(transmission, params.reverseTransmission);
-    updateElement('frontAxleRatio', frontAxleRatio ? `${frontAxleRatio.toFixed(3)}:1` : '-');
-    updateElement('rearAxleRatio', rearAxleRatio ? `${rearAxleRatio.toFixed(3)}:1` : '-');
-    updateElement('frontRatio', formatted.finalFrontRatio);
-    updateElement('rearRatio', formatted.finalRearRatio);
-    updateElement('overdrivePercentage', formatted.overdrivePercentage);
-    updateElement('frontSpeed', formatted.frontSpeed);
-    updateElement('rearSpeed', formatted.rearSpeed);
-}
-
-/**
- * Update transmission ratio display
- * @param {Object} transmission - Transmission data
- * @param {boolean} reverseTransmission - Whether transmission is reversed
- */
-function updateTransmissionRatio(transmission, reverseTransmission) {
-    const transmissionRatioEl = document.getElementById('transmissionRatio');
-    if (!transmissionRatioEl) return;
-    
-    if (!transmission) {
-        transmissionRatioEl.textContent = '-';
-        return;
-    }
-    
-    const frontTransRatio = reverseTransmission ? transmission.rear : transmission.front;
-    const rearTransRatio = reverseTransmission ? transmission.front : transmission.rear;
-    
-    if (frontTransRatio === rearTransRatio) {
-        transmissionRatioEl.textContent = `${frontTransRatio.toFixed(3)}:1`;
-    } else {
-        transmissionRatioEl.textContent = `F:${frontTransRatio.toFixed(3)} R:${rearTransRatio.toFixed(3)}`;
-    }
-}
-
-/**
- * Update a single display element
- * @param {string} id - Element ID
- * @param {string} value - Value to display
- */
-function updateElement(id, value) {
-    const element = document.getElementById(id);
-    if (element) {
-        element.textContent = value;
-    }
-}
-
-/**
- * Debounced calculation function
- */
-let debounceTimer = null;
-function debounceCalculate() {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(calculate, 300);
-}
-
-/**
- * Copy result value to clipboard
- * @param {HTMLElement} element - Result element
- */
-function copyToClipboard(element) {
-    const valueElement = element.querySelector('.value');
-    const titleElement = element.querySelector('h3');
-    
-    if (!valueElement || !titleElement) return;
-    
-    let value = valueElement.textContent.trim();
-    const title = titleElement.textContent.trim();
-    
-    if (!value || value === '-') {
-        showCopyFeedback(element, 'No value to copy', 'error');
-        return;
-    }
-    
-    // Extract numeric value from formatted text
-    if (value.includes(':1')) {
-        value = value.split(':1')[0];
-    } else {
-        const numberMatch = value.match(/[\d,.]+/);
-        if (numberMatch) {
-            value = numberMatch[0];
-        }
-    }
-    
-    const textToCopy = value;
-    
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(textToCopy).then(() => {
-            showCopyFeedback(element, 'Copied!', 'success');
-        }).catch(() => {
-            fallbackCopyToClipboard(textToCopy, element);
-        });
-    } else {
-        fallbackCopyToClipboard(textToCopy, element);
-    }
-}
-
-/**
- * Fallback copy to clipboard method
- * @param {string} text - Text to copy
- * @param {HTMLElement} element - Element for feedback
- */
-function fallbackCopyToClipboard(text, element) {
-    const textArea = document.createElement('textarea');
-    textArea.value = text;
-    textArea.style.position = 'fixed';
-    textArea.style.left = '-999999px';
-    textArea.style.top = '-999999px';
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-    
-    try {
-        const successful = document.execCommand('copy');
-        if (successful) {
-            showCopyFeedback(element, 'Copied!', 'success');
-        } else {
-            showCopyFeedback(element, 'Copy failed', 'error');
-        }
-    } catch (err) {
-        showCopyFeedback(element, 'Copy not supported', 'error');
-    }
-    
-    document.body.removeChild(textArea);
-}
-
-/**
- * Show copy feedback animation
- * @param {HTMLElement} element - Element to show feedback on
- * @param {string} message - Feedback message
- * @param {string} type - Feedback type ('success' or 'error')
- */
-function showCopyFeedback(element, message, type) {
-    element.classList.add('copied');
-    
-    const feedback = document.createElement('div');
-    feedback.textContent = message;
-    feedback.style.cssText = `
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: ${type === 'success' ? '#4CAF50' : '#f44336'};
-        color: white;
-        padding: 8px 16px;
-        border-radius: 4px;
-        font-size: 14px;
-        font-weight: bold;
-        z-index: 1000;
-        pointer-events: none;
-        animation: fadeInOut 1.5s ease-out forwards;
-    `;
-    
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-            20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-        }
-    `;
-    document.head.appendChild(style);
-    
-    element.style.position = 'relative';
-    element.appendChild(feedback);
-    
-    setTimeout(() => {
-        element.classList.remove('copied');
-        if (feedback.parentNode) {
-            feedback.parentNode.removeChild(feedback);
-        }
-        if (style.parentNode) {
-            style.parentNode.removeChild(style);
-        }
-    }, 1500);
-}
-
-/**
- * Export configuration to file
- */
-function exportConfiguration() {
-    try {
-        console.log('Starting export...');
-        
-        const config = getFormConfiguration();
-        const results = calculator.calculateAll({
-            spurTeeth: parseFloat(config.spur) || 0,
-            pinionTeeth: parseFloat(config.pinion) || 0,
-            transmissionName: config.transmission,
-            frontAxleName: config.frontAxle,
-            rearAxleName: config.rearAxle,
-            reverseTransmission: config.reverseTransmission,
-            motorKV: parseFloat(config.motorKV) || 0,
-            maxVoltage: parseFloat(config.maxVoltage) || 0,
-            tireSize: parseFloat(config.tireSize) || 0,
-            tireSizeUnit: config.tireSizeUnit
-        });
-        
-        const content = createExportContent(config, results);
-        downloadFile(content, `crawler-config-${new Date().toISOString().slice(0, 10)}.txt`);
-        
-        showExportFeedback();
-        console.log('Configuration exported successfully');
-        
-    } catch (error) {
-        console.error('Export error:', error);
-        showErrorMessage('Error exporting configuration. Please try again.');
-    }
-}
-
-/**
- * Get form configuration values
- * @returns {Object} Form configuration
- */
-function getFormConfiguration() {
-    const getElementValue = (id, defaultValue = '') => {
-        const element = document.getElementById(id);
-        return element ? element.value : defaultValue;
-    };
-    
-    const getElementChecked = (id, defaultValue = false) => {
-        const element = document.getElementById(id);
-        return element ? element.checked : defaultValue;
-    };
-    
-    return {
-        pinion: getElementValue('pinion'),
-        spur: getElementValue('spur'),
-        transmission: getElementValue('transmission'),
-        frontAxle: getElementValue('frontAxle'),
-        rearAxle: getElementValue('rearAxle'),
-        reverseTransmission: getElementChecked('reverseTransmission'),
-        motorKV: getElementValue('motorKV'),
-        voltagePreset: getElementValue('voltagePreset'),
-        maxVoltage: getElementValue('maxVoltage'),
-        tireSize: getElementValue('tireSize'),
-        tireSizeUnit: getElementValue('tireSizeUnit')
-    };
-}
-
-/**
- * Create export file content
- * @param {Object} config - Configuration data
- * @param {Object} results - Calculation results
- * @returns {string} Export file content
- */
-function createExportContent(config, results) {
-    const timestamp = new Date().toLocaleString();
-    const formatted = calculator.getFormattedResults();
-    
-    let voltagePresetText = 'Custom';
-    const voltagePresetEl = document.getElementById('voltagePreset');
-    if (voltagePresetEl && voltagePresetEl.selectedIndex >= 0) {
-        const selectedOption = voltagePresetEl.options[voltagePresetEl.selectedIndex];
-        if (selectedOption && selectedOption.text && config.voltagePreset) {
-            voltagePresetText = selectedOption.text;
-        }
-    }
-    
-    return `===============================================
-         RC CRAWLER GEAR RATIO CALCULATOR
-                 ydrRC Configuration
-===============================================
-Export Date: ${timestamp}
-
-DRIVETRAIN CONFIGURATION:
-========================
-Pinion Gear:           ${config.pinion} teeth
-Spur Gear:             ${config.spur} teeth
-Transmission:          ${config.transmission}
-Front Axle:            ${config.frontAxle}
-Rear Axle:             ${config.rearAxle}
-Reverse Transmission:  ${config.reverseTransmission ? 'YES' : 'NO'}
-
-POWER SYSTEM:
-=============
-Motor KV:              ${config.motorKV}
-Voltage Preset:        ${voltagePresetText}
-Max Voltage:           ${config.maxVoltage}V
-Tire Size:             ${config.tireSize} ${config.tireSizeUnit}
-
-CALCULATED RESULTS:
-==================
-Motor Gear Ratio:      ${formatted.motorRatio}
-Final Front Ratio:     ${formatted.finalFrontRatio}
-Final Rear Ratio:      ${formatted.finalRearRatio}
-Overdrive Percentage:  ${formatted.overdrivePercentage}
-Approx. Front Speed:   ${formatted.frontSpeed}
-Approx. Rear Speed:    ${formatted.rearSpeed}
-
-CONFIGURATION DATA (DO NOT EDIT):
-=================================
-CONFIG_START
-pinion=${config.pinion}
-spur=${config.spur}
-transmission=${config.transmission}
-frontAxle=${config.frontAxle}
-rearAxle=${config.rearAxle}
-reverseTransmission=${config.reverseTransmission}
-motorKV=${config.motorKV}
-voltagePreset=${config.voltagePreset}
-maxVoltage=${config.maxVoltage}
-tireSize=${config.tireSize}
-tireSizeUnit=${config.tireSizeUnit}
-CONFIG_END
-
-===============================================
-Generated by ydrRC Crawler Calculator
-===============================================`;
-}
-
-/**
- * Download file with given content
- * @param {string} content - File content
- * @param {string} filename - File name
- */
-function downloadFile(content, filename) {
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-}
-
-/**
- * Show export success feedback
- */
-function showExportFeedback() {
-    const exportBtn = document.getElementById('exportBtn');
-    if (exportBtn) {
-        const originalText = exportBtn.textContent;
-        exportBtn.textContent = 'Exported!';
-        exportBtn.style.backgroundColor = '#28a745';
-        setTimeout(() => {
-            exportBtn.textContent = originalText;
-            exportBtn.style.backgroundColor = '#000000';
-        }, 2000);
-    }
-}
-
-/**
- * Handle import file selection
- * @param {Event} event - File input change event
- */
-function handleImportFile(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    
-    console.log('Importing file:', file.name);
-    
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const content = e.target.result;
-            const config = parseImportContent(content);
-            
-            if (config && Object.keys(config).length > 0) {
-                applyImportedConfig(config);
-                showImportFeedback('Configuration imported successfully!', 'success');
-                setTimeout(calculate, 100);
-            } else {
-                showImportFeedback('Could not find valid configuration data in file', 'error');
-            }
-        } catch (error) {
-            console.error('Import error:', error);
-            showImportFeedback('Error: ' + error.message, 'error');
-        }
-        
-        event.target.value = '';
-    };
-    
-    reader.onerror = function() {
-        showImportFeedback('Failed to read file', 'error');
-        event.target.value = '';
-    };
-    
-    reader.readAsText(file);
-}
-
-/**
- * Parse import file content
- * @param {string} content - File content
- * @returns {Object|null} Parsed configuration
- */
-function parseImportContent(content) {
-    console.log('Parsing import content...');
-    
-    const configStart = content.indexOf('CONFIG_START');
-    const configEnd = content.indexOf('CONFIG_END');
-    
-    if (configStart === -1 || configEnd === -1) {
-        // Try alternative parsing
-        const lines = content.split('\n');
-        const config = {};
-        let foundAny = false;
-        
-        const knownKeys = [
-            'pinion', 'spur', 'transmission', 'frontAxle', 'rearAxle', 
-            'reverseTransmission', 'motorKV', 'voltagePreset', 'maxVoltage', 
-            'tireSize', 'tireSizeUnit'
-        ];
-        
-        for (const line of lines) {
-            const trimmed = line.trim();
-            if (trimmed.includes('=') && !trimmed.startsWith('#') && !trimmed.startsWith('=')) {
-                const parts = trimmed.split('=');
-                if (parts.length >= 2) {
-                    const key = parts[0].trim();
-                    const value = parts.slice(1).join('=').trim();
-                    
-                    if (knownKeys.includes(key)) {
-                        if (value === 'true') {
-                            config[key] = true;
-                        } else if (value === 'false') {
-                            config[key] = false;
-                        } else {
-                            config[key] = value;
-                        }
-                        foundAny = true;
-                    }
-                }
-            }
-        }
-        
-        return foundAny ? config : null;
-    }
-    
-    const configSection = content.substring(configStart + 12, configEnd).trim();
-    const config = {};
-    const lines = configSection.split('\n');
-    
-    for (const line of lines) {
-        const trimmed = line.trim();
-        if (trimmed && trimmed.includes('=')) {
-            const equalPos = trimmed.indexOf('=');
-            const key = trimmed.substring(0, equalPos).trim();
-            const value = trimmed.substring(equalPos + 1).trim();
-            
-            if (key) {
-                if (value === 'true') {
-                    config[key] = true;
-                } else if (value === 'false') {
-                    config[key] = false;
-                } else {
-                    config[key] = value;
-                }
-            }
-        }
-    }
-    
-    return config;
-}
-
-/**
- * Apply imported configuration to form
- * @param {Object} config - Configuration to apply
- */
-function applyImportedConfig(config) {
-    console.log('Applying imported config:', config);
-    
-    const setValue = (id, value) => {
-        const element = document.getElementById(id);
-        if (element && value !== undefined && value !== null && value !== '') {
-            element.value = value;
-            return true;
-        }
-        return false;
-    };
-    
-    const setChecked = (id, checked) => {
-        const element = document.getElementById(id);
-        if (element && checked !== undefined && checked !== null) {
-            element.checked = checked;
-            return true;
-        }
-        return false;
-    };
-    
-    // Apply all values
-    setValue('pinion', config.pinion);
-    setValue('spur', config.spur);
-    setValue('transmission', config.transmission);
-    setValue('frontAxle', config.frontAxle);
-    setValue('rearAxle', config.rearAxle);
-    setChecked('reverseTransmission', config.reverseTransmission);
-    setValue('motorKV', config.motorKV);
-    setValue('voltagePreset', config.voltagePreset);
-    setValue('maxVoltage', config.maxVoltage);
-    setValue('tireSize', config.tireSize);
-    setValue('tireSizeUnit', config.tireSizeUnit);
-    
-    // Handle voltage preset logic
-    const voltagePreset = document.getElementById('voltagePreset');
-    const maxVoltage = document.getElementById('maxVoltage');
-    
-    if (voltagePreset && maxVoltage) {
-        if (config.voltagePreset && config.voltagePreset !== '') {
-            maxVoltage.disabled = true;
-            maxVoltage.style.backgroundColor = '#e9ecef';
-            maxVoltage.style.cursor = 'not-allowed';
-        } else {
-            maxVoltage.disabled = false;
-            maxVoltage.style.backgroundColor = 'white';
-            maxVoltage.style.cursor = 'text';
-        }
-    }
-}
-
-/**
- * Show import feedback message
- * @param {string} message - Feedback message
- * @param {string} type - Message type ('success' or 'error')
- */
-function showImportFeedback(message, type) {
-    const feedback = document.createElement('div');
-    feedback.textContent = message;
-    feedback.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: ${type === 'success' ? '#4CAF50' : '#f44336'};
-        color: white;
-        padding: 15px 20px;
-        border-radius: 4px;
-        font-size: 14px;
-        font-weight: bold;
-        z-index: 10000;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        animation: slideInRight 0.3s ease-out;
-    `;
-    
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-    `;
-    document.head.appendChild(style);
-    document.body.appendChild(feedback);
-    
-    setTimeout(() => {
-        if (feedback.parentNode) feedback.parentNode.removeChild(feedback);
-        if (style.parentNode) style.parentNode.removeChild(style);
-    }, 3000);
-}
-
-/**
- * Show error message
- * @param {string} message - Error message
- */
-function showErrorMessage(message) {
-    console.error(message);
-    showImportFeedback(message, 'error');
-}
-
-/**
- * Validate form inputs
- * @returns {Object} Validation result
- */
-function validateInputs() {
-    const params = getCalculationParameters();
-    return calculator.validateInputs(params);
-}
-
-/**
- * Show validation messages
- * @param {Object} validation - Validation result
- */
-function showValidationMessages(validation) {
-    if (!validation.isValid) {
-        validation.errors.forEach(error => showErrorMessage(error));
-    }
-    
-    if (validation.warnings.length > 0) {
-        validation.warnings.forEach(warning => 
-            showImportFeedback(warning, 'warning')
-        );
-    }
-}
-
-/**
- * Toggle loading state
- * @param {boolean} loading - Whether to show loading state
- */
-function setLoadingState(loading) {
-    const container = document.querySelector('.container');
-    if (container) {
-        if (loading) {
-            container.classList.add('loading');
-        } else {
-            container.classList.remove('loading');
-        }
-    }
-}
-
-/**
- * Initialize calculator when DOM is ready
- */
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, initializing calculator...');
-    initializeUI();
-});
-
-// Export functions for use in other modules
+// Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
-        initializeUI,
-        calculate,
-        exportConfiguration,
-        handleImportFile,
-        showErrorMessage,
-        validateInputs,
-        setLoadingState
+        TRANSMISSIONS,
+        AXLES,
+        getTransmissionNames,
+        getAxleNames,
+        getTransmission,
+        getAxle,
+        addTransmission,
+        addAxle,
+        searchTransmissions,
+        searchAxles,
+        getTransmissionsByManufacturer,
+        getAxlesByManufacturer,
+        validateTransmission,
+        validateAxleRatio
+    };
+}15/20)": 3.429,
+    "AR60P STD (15/20)": 3.897,
+    "AR60P UD (15/20)": 4.410,
+    "AR60P OD (16/19)": 3.054,
+    "AR60P STD (16/19)": 3.471,
+    "AR60P UD (16/19)": 3.928,
+    "Axial AF16P STD (12/29)": 7.994,
+    "Axial AF16P STD (13/28)": 7.124,
+    "Axial AF16P STD (14/27)": 6.379,
+    "Axial AF16P OD (12/29)": 7.064,
+    "Axial AF16P OD (13/28)": 6.296,
+    "Axial AF16P OD (14/27)": 5.637,
+    "Dlux Superlite LOW": 14.286,
+    "Dlux Superlite STD": 11.429,
+    "Dlux SLP LOW (12/23)": 27.382,
+    "Dlux SLP STD (12/23)": 21.906,
+    "Dlux SLP LOW (15/20)": 19.048,
+    "Dlux SLP STD (15/20)": 15.239,
+    "Element IFS with SSD Portal (14/16)": 4.286,
+    "Element IFS with SSD Portal (16/14)": 3.281,
+    "Element Portal (15/20)": 5.500,
+    "Element Portal (12/23)": 7.906,
+    "HPI Venture": 3.308,
+    "MEUS Racing Nylon Portal OD2 (20/28)": 4.200,
+    "MEUS Racing Nylon Portal OD1 (20/28)": 4.725,
+    "MEUS Racing Nylon Portal (20/28)": 5.250,
+    "MEUS Racing Nylon Portal UD (20/28)": 5.775,
+    "TRX-4 OD": 7.028,
+    "TRX-4 STD": 7.899,
+    "TRX-4 UD": 8.944,
+    "UTB18 STD (13/28) Dlux": 5.467,
+    "UTB18 STD (14/27) TGH": 4.896,
+    "UTB18 STD (15/26) STK": 4.400,
+    "UTB18 STD (16/25) Treal": 3.966,
+    "UTB18 STD (17/24) Treal": 3.584,
+    "UTB18 OD (13/28) Dlux": 4.639,
+    "UTB18 OD (14/27) TGH": 4.154,
+    "UTB18 OD (15/26) STK": 3.733,
+    "UTB18 OD (16/25) Treal": 3.365,
+    "UTB18 OD (17/24) Treal": 3.041,
+    "VP Portal OD2 (18/30)": 5.000,
+    "VP Portal OD1 (18/30)": 5.625,
+    "VP Portal (18/30)": 6.250,
+    "VP Portal UD (18/30)": 6.875,
+    "VP Portal OD2 (20/28)": 4.200,
+    "VP Portal OD1 (20/28)": 4.725,
+    "VP Portal (20/28)": 5.250,
+    "VP Portal UD (20/28)": 5.775
+};
+
+/**
+ * Get sorted list of transmission names
+ * @returns {Array} Sorted transmission names
+ */
+function getTransmissionNames() {
+    return Object.keys(TRANSMISSIONS).sort();
+}
+
+/**
+ * Get sorted list of axle names
+ * @returns {Array} Sorted axle names
+ */
+function getAxleNames() {
+    return Object.keys(AXLES).sort();
+}
+
+/**
+ * Get transmission data by name
+ * @param {string} name - Transmission name
+ * @returns {Object|null} Transmission data or null if not found
+ */
+function getTransmission(name) {
+    return TRANSMISSIONS[name] || null;
+}
+
+/**
+ * Get axle ratio by name
+ * @param {string} name - Axle name
+ * @returns {number|null} Axle ratio or null if not found
+ */
+function getAxle(name) {
+    return AXLES[name] || null;
+}
+
+/**
+ * Add new transmission to the database
+ * @param {string} name - Transmission name
+ * @param {Object} ratios - Front and rear ratios
+ * @param {number} ratios.front - Front output ratio
+ * @param {number} ratios.rear - Rear output ratio
+ */
+function addTransmission(name, ratios) {
+    if (typeof ratios.front === 'number' && typeof ratios.rear === 'number') {
+        TRANSMISSIONS[name] = { front: ratios.front, rear: ratios.rear };
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Add new axle to the database
+ * @param {string} name - Axle name
+ * @param {number} ratio - Axle gear ratio
+ */
+function addAxle(name, ratio) {
+    if (typeof ratio === 'number' && ratio > 0) {
+        AXLES[name] = ratio;
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Search transmissions by keyword
+ * @param {string} keyword - Search keyword
+ * @returns {Array} Matching transmission names
+ */
+function searchTransmissions(keyword) {
+    const lowercaseKeyword = keyword.toLowerCase();
+    return Object.keys(TRANSMISSIONS).filter(name => 
+        name.toLowerCase().includes(lowercaseKeyword)
+    );
+}
+
+/**
+ * Search axles by keyword
+ * @param {string} keyword - Search keyword
+ * @returns {Array} Matching axle names
+ */
+function searchAxles(keyword) {
+    const lowercaseKeyword = keyword.toLowerCase();
+    return Object.keys(AXLES).filter(name => 
+        name.toLowerCase().includes(lowercaseKeyword)
+    );
+}
+
+/**
+ * Get transmissions by manufacturer
+ * @param {string} manufacturer - Manufacturer name (e.g., "Axial", "Dlux")
+ * @returns {Array} Transmissions from specified manufacturer
+ */
+function getTransmissionsByManufacturer(manufacturer) {
+    const lowercaseManufacturer = manufacturer.toLowerCase();
+    return Object.keys(TRANSMISSIONS).filter(name => 
+        name.toLowerCase().startsWith(lowercaseManufacturer)
+    );
+}
+
+/**
+ * Get axles by manufacturer
+ * @param {string} manufacturer - Manufacturer name (e.g., "AR44", "TRX-4")
+ * @returns {Array} Axles from specified manufacturer
+ */
+function getAxlesByManufacturer(manufacturer) {
+    const lowercaseManufacturer = manufacturer.toLowerCase();
+    return Object.keys(AXLES).filter(name => 
+        name.toLowerCase().includes(lowercaseManufacturer)
+    );
+}
+
+/**
+ * Validate transmission data
+ * @param {Object} transmission - Transmission object
+ * @returns {boolean} True if valid
+ */
+function validateTransmission(transmission) {
+    return transmission && 
+           typeof transmission.front === 'number' && 
+           typeof transmission.rear === 'number' &&
+           transmission.front > 0 && 
+           transmission.rear > 0;
+}
+
+/**
+ * Validate axle ratio
+ * @param {number} ratio - Axle ratio
+ * @returns {boolean} True if valid
+ */
+function validateAxleRatio(ratio) {
+    return typeof ratio === 'number' && ratio > 0;
+}
+
+// Export for use in other modules
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        TRANSMISSIONS,
+        AXLES,
+        getTransmissionNames,
+        getAxleNames,
+        getTransmission,
+        getAxle,
+        addTransmission,
+        addAxle,
+        searchTransmissions,
+        searchAxles,
+        getTransmissionsByManufacturer,
+        getAxlesByManufacturer,
+        validateTransmission,
+        validateAxleRatio
     };
 }
