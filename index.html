@@ -166,6 +166,223 @@
             </section>
         </main>
         
+		<!-- Add this section after the main content section in index.html -->
+        <section class="comparison-section">
+            <div class="comparison-header">
+                <h2>Setup Comparison Tool</h2>
+                <p>Compare two different gear configurations side-by-side</p>
+                <button id="toggleComparison" class="action-btn">Show Comparison</button>
+            </div>
+            
+            <div id="comparisonContent" class="comparison-content" style="display: none;">
+                <div class="comparison-grid">
+                    <!-- Setup A -->
+                    <div class="comparison-setup">
+                        <h3>Setup A</h3>
+                        <div class="comparison-inputs">
+                            <div class="input-group">
+                                <label>Setup Name:</label>
+                                <input type="text" id="setupA_name" placeholder="e.g., Current Setup" value="Current Setup">
+                            </div>
+                            
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label>Pinion:</label>
+                                    <input type="number" id="setupA_pinion" value="13" min="8" max="30">
+                                </div>
+                                <div class="input-group">
+                                    <label>Spur:</label>
+                                    <input type="number" id="setupA_spur" value="56" min="20" max="100">
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>Transmission:</label>
+                                <select id="setupA_transmission">
+                                    <option value="">Select Transmission...</option>
+                                </select>
+                            </div>
+                            
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label>Front Axle:</label>
+                                    <select id="setupA_frontAxle">
+                                        <option value="">Select Front Axle...</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label>Rear Axle:</label>
+                                    <select id="setupA_rearAxle">
+                                        <option value="">Select Rear Axle...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label>Motor KV:</label>
+                                    <input type="number" id="setupA_motorKV" value="1800" min="100" max="5000">
+                                </div>
+                                <div class="input-group">
+                                    <label>Voltage:</label>
+                                    <input type="number" id="setupA_voltage" value="12.6" step="0.1" min="3" max="30">
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>Tire Size:</label>
+                                <div class="tire-size-group">
+                                    <input type="number" id="setupA_tireSize" value="4.75" step="0.01" min="2" max="6">
+                                    <select id="setupA_tireSizeUnit">
+                                        <option value="inches">inches</option>
+                                        <option value="mm">mm</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="comparison-actions">
+                                <button type="button" id="copyCurrentToA" class="action-btn secondary">Copy Current Setup</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Setup B -->
+                    <div class="comparison-setup">
+                        <h3>Setup B</h3>
+                        <div class="comparison-inputs">
+                            <div class="input-group">
+                                <label>Setup Name:</label>
+                                <input type="text" id="setupB_name" placeholder="e.g., Alternative Setup" value="Alternative Setup">
+                            </div>
+                            
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label>Pinion:</label>
+                                    <input type="number" id="setupB_pinion" value="15" min="8" max="30">
+                                </div>
+                                <div class="input-group">
+                                    <label>Spur:</label>
+                                    <input type="number" id="setupB_spur" value="48" min="20" max="100">
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>Transmission:</label>
+                                <select id="setupB_transmission">
+                                    <option value="">Select Transmission...</option>
+                                </select>
+                            </div>
+                            
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label>Front Axle:</label>
+                                    <select id="setupB_frontAxle">
+                                        <option value="">Select Front Axle...</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label>Rear Axle:</label>
+                                    <select id="setupB_rearAxle">
+                                        <option value="">Select Rear Axle...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label>Motor KV:</label>
+                                    <input type="number" id="setupB_motorKV" value="1800" min="100" max="5000">
+                                </div>
+                                <div class="input-group">
+                                    <label>Voltage:</label>
+                                    <input type="number" id="setupB_voltage" value="12.6" step="0.1" min="3" max="30">
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label>Tire Size:</label>
+                                <div class="tire-size-group">
+                                    <input type="number" id="setupB_tireSize" value="4.75" step="0.01" min="2" max="6">
+                                    <select id="setupB_tireSizeUnit">
+                                        <option value="inches">inches</option>
+                                        <option value="mm">mm</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="comparison-actions">
+                                <button type="button" id="copyCurrentToB" class="action-btn secondary">Copy Current Setup</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Comparison Results -->
+                <div class="comparison-results">
+                    <h3>Comparison Results</h3>
+                    <div class="results-grid">
+                        <div class="result-header">
+                            <div class="result-label">Measurement</div>
+                            <div class="result-setupA">Setup A</div>
+                            <div class="result-setupB">Setup B</div>
+                            <div class="result-difference">Difference</div>
+                        </div>
+                        
+                        <div class="result-row">
+                            <div class="result-label">Motor Ratio</div>
+                            <div class="result-setupA" id="compA_motorRatio">-</div>
+                            <div class="result-setupB" id="compB_motorRatio">-</div>
+                            <div class="result-difference" id="comp_motorRatioDiff">-</div>
+                        </div>
+                        
+                        <div class="result-row">
+                            <div class="result-label">Final Front Ratio</div>
+                            <div class="result-setupA" id="compA_frontRatio">-</div>
+                            <div class="result-setupB" id="compB_frontRatio">-</div>
+                            <div class="result-difference" id="comp_frontRatioDiff">-</div>
+                        </div>
+                        
+                        <div class="result-row">
+                            <div class="result-label">Final Rear Ratio</div>
+                            <div class="result-setupA" id="compA_rearRatio">-</div>
+                            <div class="result-setupB" id="compB_rearRatio">-</div>
+                            <div class="result-difference" id="comp_rearRatioDiff">-</div>
+                        </div>
+                        
+                        <div class="result-row">
+                            <div class="result-label">Overdrive %</div>
+                            <div class="result-setupA" id="compA_overdrive">-</div>
+                            <div class="result-setupB" id="compB_overdrive">-</div>
+                            <div class="result-difference" id="comp_overdriveDiff">-</div>
+                        </div>
+                        
+                        <div class="result-row">
+                            <div class="result-label">Front Speed</div>
+                            <div class="result-setupA" id="compA_frontSpeed">-</div>
+                            <div class="result-setupB" id="compB_frontSpeed">-</div>
+                            <div class="result-difference" id="comp_frontSpeedDiff">-</div>
+                        </div>
+                        
+                        <div class="result-row">
+                            <div class="result-label">Rear Speed</div>
+                            <div class="result-setupA" id="compA_rearSpeed">-</div>
+                            <div class="result-setupB" id="compB_rearSpeed">-</div>
+                            <div class="result-difference" id="comp_rearSpeedDiff">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="comparison-summary">
+                        <div class="summary-card">
+                            <h4>Summary</h4>
+                            <div id="comparisonSummary">
+                                <p>Configure both setups above to see detailed comparison results.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+		
         <section class="notes-section">
             <h2>Notes</h2>
             <div class="notes-content">
