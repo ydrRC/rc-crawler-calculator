@@ -1,6 +1,5 @@
 /**
  * RC Crawler Calculator - UI Components
- * Handles user interface interactions and display updates
  */
 
 function initializeUI() {
@@ -20,16 +19,12 @@ function initializeUI() {
         console.log('UI initialization complete');
     } catch (error) {
         console.error('UI initialization error:', error);
-        showErrorMessage('Failed to initialize calculator. Please refresh the page.');
     }
 }
 
 function populateTransmissions() {
     const select = document.getElementById('transmission');
-    if (!select) {
-        console.error('Transmission select element not found');
-        return;
-    }
+    if (!select) return;
     
     const transmissions = getTransmissionNames();
     
@@ -51,10 +46,7 @@ function populateAxles() {
     const frontSelect = document.getElementById('frontAxle');
     const rearSelect = document.getElementById('rearAxle');
     
-    if (!frontSelect || !rearSelect) {
-        console.error('Axle select elements not found');
-        return;
-    }
+    if (!frontSelect || !rearSelect) return;
     
     const axles = getAxleNames();
     
@@ -81,18 +73,20 @@ function populateAxles() {
 }
 
 function setDefaults() {
-    const defaults = {
-        transmission: 'Axial 3-Gear',
-        frontAxle: 'AR44 / AR45 / SCX Pro / Element',
-        rearAxle: 'AR44 / AR45 / SCX Pro / Element'
-    };
+    const transmissionEl = document.getElementById('transmission');
+    if (transmissionEl) {
+        transmissionEl.value = 'Axial 3-Gear';
+    }
     
-    Object.entries(defaults).forEach(([id, value]) => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.value = value;
-        }
-    });
+    const frontAxleEl = document.getElementById('frontAxle');
+    if (frontAxleEl) {
+        frontAxleEl.value = 'AR44 / AR45 / SCX Pro / Element';
+    }
+    
+    const rearAxleEl = document.getElementById('rearAxle');
+    if (rearAxleEl) {
+        rearAxleEl.value = 'AR44 / AR45 / SCX Pro / Element';
+    }
     
     console.log('Default values set');
 }
@@ -159,47 +153,39 @@ function setupResultClickListeners() {
 
 function calculate() {
     try {
-        const params = getCalculationParameters();
+        const params = {
+            spurTeeth: parseFloat(document.getElementById('spur').value) || 0,
+            pinionTeeth: parseFloat(document.getElementById('pinion').value) || 0,
+            transmissionName: document.getElementById('transmission').value,
+            frontAxleName: document.getElementById('frontAxle').value,
+            rearAxleName: document.getElementById('rearAxle').value,
+            reverseTransmission: document.getElementById('reverseTransmission').checked,
+            motorKV: parseFloat(document.getElementById('motorKV').value) || 0,
+            maxVoltage: parseFloat(document.getElementById('maxVoltage').value) || 0,
+            tireSize: parseFloat(document.getElementById('tireSize').value) || 0,
+            tireSizeUnit: document.getElementById('tireSizeUnit').value
+        };
+        
         const results = calculator.calculateAll(params);
         const formatted = calculator.getFormattedResults();
         
-        updateResultsDisplay(params, results, formatted);
+        const transmission = getTransmission(params.transmissionName);
+        const frontAxleRatio = getAxle(params.frontAxleName);
+        const rearAxleRatio = getAxle(params.rearAxleName);
+        
+        updateElement('motorRatio', formatted.motorRatio);
+        updateTransmissionRatio(transmission, params.reverseTransmission);
+        updateElement('frontAxleRatio', frontAxleRatio ? `${frontAxleRatio.toFixed(3)}:1` : '-');
+        updateElement('rearAxleRatio', rearAxleRatio ? `${rearAxleRatio.toFixed(3)}:1` : '-');
+        updateElement('frontRatio', formatted.finalFrontRatio);
+        updateElement('rearRatio', formatted.finalRearRatio);
+        updateElement('overdrivePercentage', formatted.overdrivePercentage);
+        updateElement('frontSpeed', formatted.frontSpeed);
+        updateElement('rearSpeed', formatted.rearSpeed);
         
     } catch (error) {
         console.error('Calculation error:', error);
-        showErrorMessage('Calculation error occurred. Please check your inputs.');
     }
-}
-
-function getCalculationParameters() {
-    return {
-        spurTeeth: parseFloat(document.getElementById('spur').value) || 0,
-        pinionTeeth: parseFloat(document.getElementById('pinion').value) || 0,
-        transmissionName: document.getElementById('transmission').value,
-        frontAxleName: document.getElementById('frontAxle').value,
-        rearAxleName: document.getElementById('rearAxle').value,
-        reverseTransmission: document.getElementById('reverseTransmission').checked,
-        motorKV: parseFloat(document.getElementById('motorKV').value) || 0,
-        maxVoltage: parseFloat(document.getElementById('maxVoltage').value) || 0,
-        tireSize: parseFloat(document.getElementById('tireSize').value) || 0,
-        tireSizeUnit: document.getElementById('tireSizeUnit').value
-    };
-}
-
-function updateResultsDisplay(params, results, formatted) {
-    const transmission = getTransmission(params.transmissionName);
-    const frontAxleRatio = getAxle(params.frontAxleName);
-    const rearAxleRatio = getAxle(params.rearAxleName);
-    
-    updateElement('motorRatio', formatted.motorRatio);
-    updateTransmissionRatio(transmission, params.reverseTransmission);
-    updateElement('frontAxleRatio', frontAxleRatio ? `${frontAxleRatio.toFixed(3)}:1` : '-');
-    updateElement('rearAxleRatio', rearAxleRatio ? `${rearAxleRatio.toFixed(3)}:1` : '-');
-    updateElement('frontRatio', formatted.finalFrontRatio);
-    updateElement('rearRatio', formatted.finalRearRatio);
-    updateElement('overdrivePercentage', formatted.overdrivePercentage);
-    updateElement('frontSpeed', formatted.frontSpeed);
-    updateElement('rearSpeed', formatted.rearSpeed);
 }
 
 function updateTransmissionRatio(transmission, reverseTransmission) {
@@ -236,15 +222,10 @@ function debounceCalculate() {
 
 function copyToClipboard(element) {
     const valueElement = element.querySelector('.value');
-    
     if (!valueElement) return;
     
     let value = valueElement.textContent.trim();
-    
-    if (!value || value === '-') {
-        showCopyFeedback(element, 'No value to copy', 'error');
-        return;
-    }
+    if (!value || value === '-') return;
     
     if (value.includes(':1')) {
         value = value.split(':1')[0];
@@ -280,11 +261,9 @@ function fallbackCopyToClipboard(text, element) {
         const successful = document.execCommand('copy');
         if (successful) {
             showCopyFeedback(element, 'Copied!', 'success');
-        } else {
-            showCopyFeedback(element, 'Copy failed', 'error');
         }
     } catch (err) {
-        showCopyFeedback(element, 'Copy not supported', 'error');
+        console.log('Copy not supported');
     }
     
     document.body.removeChild(textArea);
@@ -308,19 +287,7 @@ function showCopyFeedback(element, message, type) {
         font-weight: bold;
         z-index: 1000;
         pointer-events: none;
-        animation: fadeInOut 1.5s ease-out forwards;
     `;
-    
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-            20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-        }
-    `;
-    document.head.appendChild(style);
     
     element.style.position = 'relative';
     element.appendChild(feedback);
@@ -330,83 +297,27 @@ function showCopyFeedback(element, message, type) {
         if (feedback.parentNode) {
             feedback.parentNode.removeChild(feedback);
         }
-        if (style.parentNode) {
-            style.parentNode.removeChild(style);
-        }
     }, 1500);
 }
 
 function exportConfiguration() {
     try {
-        const config = getFormConfiguration();
-        const results = calculator.calculateAll({
-            spurTeeth: parseFloat(config.spur) || 0,
-            pinionTeeth: parseFloat(config.pinion) || 0,
-            transmissionName: config.transmission,
-            frontAxleName: config.frontAxle,
-            rearAxleName: config.rearAxle,
-            reverseTransmission: config.reverseTransmission,
-            motorKV: parseFloat(config.motorKV) || 0,
-            maxVoltage: parseFloat(config.maxVoltage) || 0,
-            tireSize: parseFloat(config.tireSize) || 0,
-            tireSizeUnit: config.tireSizeUnit
-        });
+        const config = {
+            pinion: document.getElementById('pinion').value,
+            spur: document.getElementById('spur').value,
+            transmission: document.getElementById('transmission').value,
+            frontAxle: document.getElementById('frontAxle').value,
+            rearAxle: document.getElementById('rearAxle').value,
+            reverseTransmission: document.getElementById('reverseTransmission').checked,
+            motorKV: document.getElementById('motorKV').value,
+            voltagePreset: document.getElementById('voltagePreset').value,
+            maxVoltage: document.getElementById('maxVoltage').value,
+            tireSize: document.getElementById('tireSize').value,
+            tireSizeUnit: document.getElementById('tireSizeUnit').value
+        };
         
-        let content = createExportContent(config, results);
-        
-        if (typeof addVersionToExport === 'function') {
-            content = addVersionToExport(content);
-        }
-        
-        downloadFile(content, `crawler-config-${new Date().toISOString().slice(0, 10)}.txt`);
-        showExportFeedback();
-        
-    } catch (error) {
-        console.error('Export error:', error);
-        showErrorMessage('Error exporting configuration. Please try again.');
-    }
-}
-
-function getFormConfiguration() {
-    const getElementValue = (id, defaultValue = '') => {
-        const element = document.getElementById(id);
-        return element ? element.value : defaultValue;
-    };
-    
-    const getElementChecked = (id, defaultValue = false) => {
-        const element = document.getElementById(id);
-        return element ? element.checked : defaultValue;
-    };
-    
-    return {
-        pinion: getElementValue('pinion'),
-        spur: getElementValue('spur'),
-        transmission: getElementValue('transmission'),
-        frontAxle: getElementValue('frontAxle'),
-        rearAxle: getElementValue('rearAxle'),
-        reverseTransmission: getElementChecked('reverseTransmission'),
-        motorKV: getElementValue('motorKV'),
-        voltagePreset: getElementValue('voltagePreset'),
-        maxVoltage: getElementValue('maxVoltage'),
-        tireSize: getElementValue('tireSize'),
-        tireSizeUnit: getElementValue('tireSizeUnit')
-    };
-}
-
-function createExportContent(config, results) {
-    const timestamp = new Date().toLocaleString();
-    const formatted = calculator.getFormattedResults();
-    
-    let voltagePresetText = 'Custom';
-    const voltagePresetEl = document.getElementById('voltagePreset');
-    if (voltagePresetEl && voltagePresetEl.selectedIndex >= 0) {
-        const selectedOption = voltagePresetEl.options[voltagePresetEl.selectedIndex];
-        if (selectedOption && selectedOption.text && config.voltagePreset) {
-            voltagePresetText = selectedOption.text;
-        }
-    }
-    
-    return `===============================================
+        const timestamp = new Date().toLocaleString();
+        const content = `===============================================
          RC CRAWLER GEAR RATIO CALCULATOR
                  ydrRC Configuration
 ===============================================
@@ -424,18 +335,8 @@ Reverse Transmission:  ${config.reverseTransmission ? 'YES' : 'NO'}
 POWER SYSTEM:
 =============
 Motor KV:              ${config.motorKV}
-Voltage Preset:        ${voltagePresetText}
 Max Voltage:           ${config.maxVoltage}V
 Tire Size:             ${config.tireSize} ${config.tireSizeUnit}
-
-CALCULATED RESULTS:
-==================
-Motor Gear Ratio:      ${formatted.motorRatio}
-Final Front Ratio:     ${formatted.finalFrontRatio}
-Final Rear Ratio:      ${formatted.finalRearRatio}
-Overdrive Percentage:  ${formatted.overdrivePercentage}
-Approx. Front Speed:   ${formatted.frontSpeed}
-Approx. Rear Speed:    ${formatted.rearSpeed}
 
 CONFIGURATION DATA (DO NOT EDIT):
 =================================
@@ -456,30 +357,30 @@ CONFIG_END
 ===============================================
 Generated by ydrRC Crawler Calculator
 ===============================================`;
-}
-
-function downloadFile(content, filename) {
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-}
-
-function showExportFeedback() {
-    const exportBtn = document.getElementById('exportBtn');
-    if (exportBtn) {
-        const originalText = exportBtn.textContent;
-        exportBtn.textContent = 'Exported!';
-        exportBtn.style.backgroundColor = '#28a745';
-        setTimeout(() => {
-            exportBtn.textContent = originalText;
-            exportBtn.style.backgroundColor = '#000000';
-        }, 2000);
+        
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `crawler-config-${new Date().toISOString().slice(0, 10)}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        const exportBtn = document.getElementById('exportBtn');
+        if (exportBtn) {
+            const originalText = exportBtn.textContent;
+            exportBtn.textContent = 'Exported!';
+            exportBtn.style.backgroundColor = '#28a745';
+            setTimeout(() => {
+                exportBtn.textContent = originalText;
+                exportBtn.style.backgroundColor = '#000000';
+            }, 2000);
+        }
+        
+    } catch (error) {
+        console.error('Export error:', error);
     }
 }
 
@@ -491,57 +392,17 @@ function handleImportFile(event) {
     reader.onload = function(e) {
         try {
             const content = e.target.result;
-            const config = parseImportContent(content);
+            const configStart = content.indexOf('CONFIG_START');
+            const configEnd = content.indexOf('CONFIG_END');
             
-            if (config && Object.keys(config).length > 0) {
-                applyImportedConfig(config);
-                showImportFeedback('Configuration imported successfully!', 'success');
-                setTimeout(calculate, 100);
-            } else {
-                showImportFeedback('Could not find valid configuration data in file', 'error');
-            }
-        } catch (error) {
-            showImportFeedback('Error: ' + error.message, 'error');
+            if (configStart === -1 || configEnd === -1) {
+                showImportFeedback('Error: ' + error.message, 'error');
         }
         
         event.target.value = '';
     };
     
     reader.readAsText(file);
-}
-
-function parseImportContent(content) {
-    const configStart = content.indexOf('CONFIG_START');
-    const configEnd = content.indexOf('CONFIG_END');
-    
-    if (configStart === -1 || configEnd === -1) {
-        return null;
-    }
-    
-    const configSection = content.substring(configStart + 12, configEnd).trim();
-    const config = {};
-    const lines = configSection.split('\n');
-    
-    for (const line of lines) {
-        const trimmed = line.trim();
-        if (trimmed && trimmed.includes('=')) {
-            const equalPos = trimmed.indexOf('=');
-            const key = trimmed.substring(0, equalPos).trim();
-            const value = trimmed.substring(equalPos + 1).trim();
-            
-            if (key) {
-                if (value === 'true') {
-                    config[key] = true;
-                } else if (value === 'false') {
-                    config[key] = false;
-                } else {
-                    config[key] = value;
-                }
-            }
-        }
-    }
-    
-    return config;
 }
 
 function applyImportedConfig(config) {
@@ -613,12 +474,39 @@ function showImportFeedback(message, type) {
     }, 3000);
 }
 
-function showErrorMessage(message) {
-    console.error(message);
-    showImportFeedback(message, 'error');
-}
-
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing calculator...');
     initializeUI();
-});
+});('Could not find valid configuration data in file', 'error');
+                return;
+            }
+            
+            const configSection = content.substring(configStart + 12, configEnd).trim();
+            const config = {};
+            const lines = configSection.split('\n');
+            
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (trimmed && trimmed.includes('=')) {
+                    const equalPos = trimmed.indexOf('=');
+                    const key = trimmed.substring(0, equalPos).trim();
+                    const value = trimmed.substring(equalPos + 1).trim();
+                    
+                    if (key) {
+                        if (value === 'true') {
+                            config[key] = true;
+                        } else if (value === 'false') {
+                            config[key] = false;
+                        } else {
+                            config[key] = value;
+                        }
+                    }
+                }
+            }
+            
+            applyImportedConfig(config);
+            showImportFeedback('Configuration imported successfully!', 'success');
+            setTimeout(calculate, 100);
+            
+        } catch (error) {
+            showImportFeedback
