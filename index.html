@@ -186,7 +186,14 @@
                      alt="You're Damn Right Logo" 
                      class="footer-logo">
             </a>
-            <p>&copy; 2025 <span class="ydrrc-text"></span> Crawler Calculator. Licensed under CC BY-NC-SA 4.0</p>
+            <div class="footer-content">
+                <p>&copy; 2025 <span class="ydrrc-text"></span> Crawler Calculator. Licensed under CC BY-NC-SA 4.0</p>
+                <div class="version-info">
+                    <span class="version-label">Version</span>
+                    <span class="version-number" id="versionNumber">2.1.0</span>
+                    <span class="version-date">Build: June 2025</span>
+                </div>
+            </div>
         </footer>
     </div>
 
@@ -194,7 +201,7 @@
     <script>
         // Check if files are loading properly and provide fallback
         let filesLoaded = 0;
-        const totalFiles = 3;
+        const totalFiles = 4; // Updated for version.js
         
         function checkInitialization() {
             filesLoaded++;
@@ -229,7 +236,7 @@
                                 <li>Or use VS Code Live Server extension</li>
                             </ul>
                         </li>
-                        <li><strong>Check file structure:</strong> Ensure <code>js/data.js</code>, <code>js/calculator.js</code>, and <code>js/ui.js</code> exist</li>
+                        <li><strong>Check file structure:</strong> Ensure all JS files exist in the <code>js/</code> folder</li>
                         <li><strong>Alternative:</strong> <a href="#" onclick="useEmbeddedVersion()">Use embedded version</a> (single file)</li>
                     </ol>
                 </div>
@@ -250,6 +257,7 @@
         }, 5000);
     </script>
     
+    <script src="js/version.js" onload="checkInitialization()" onerror="console.error('Failed to load version.js'); showInitializationError();"></script>
     <script src="js/data.js" onload="checkInitialization()" onerror="console.error('Failed to load data.js'); showInitializationError();"></script>
     <script src="js/calculator.js" onload="checkInitialization()" onerror="console.error('Failed to load calculator.js'); showInitializationError();"></script>
     <script src="js/ui.js" onload="checkInitialization()" onerror="console.error('Failed to load ui.js'); showInitializationError();"></script>
