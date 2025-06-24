@@ -149,12 +149,15 @@ function setupVoltagePresetListener() {
         });
     }
     
-    // Add tire size unit conversion
+    // Add tire size unit conversion and validation
     const tireSizeUnitEl = document.getElementById('tireSizeUnit');
     const tireSizeEl = document.getElementById('tireSize');
     
     if (tireSizeUnitEl && tireSizeEl) {
         let lastUnit = tireSizeUnitEl.value; // Track the previous unit
+        
+        // Set initial min/max based on current unit
+        updateTireSizeValidation(tireSizeUnitEl.value, tireSizeEl);
         
         tireSizeUnitEl.addEventListener('change', function() {
             const currentUnit = this.value;
@@ -182,12 +185,25 @@ function setupVoltagePresetListener() {
                 }
             }
             
+            // Update validation ranges for new unit
+            updateTireSizeValidation(currentUnit, tireSizeEl);
+            
             // Update last unit for next conversion
             lastUnit = currentUnit;
             
             // Recalculate
             calculate();
         });
+    }
+}
+
+function updateTireSizeValidation(unit, tireSizeEl) {
+    if (unit === 'inches') {
+        tireSizeEl.min = '2';
+        tireSizeEl.max = '6';
+    } else if (unit === 'mm') {
+        tireSizeEl.min = '50.80';
+        tireSizeEl.max = '152.40';
     }
 }
 
