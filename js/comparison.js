@@ -13,6 +13,23 @@ class SetupComparison {
 
     initialize() {
         console.log('Initializing comparison feature...');
+        
+        // Check if required functions are available
+        if (typeof getTransmissionNames !== 'function') {
+            console.error('getTransmissionNames function not available for comparison');
+            return;
+        }
+        
+        if (typeof getAxleNames !== 'function') {
+            console.error('getAxleNames function not available for comparison');
+            return;
+        }
+        
+        if (typeof calculator === 'undefined') {
+            console.error('calculator not available for comparison');
+            return;
+        }
+        
         this.populateComparisonDropdowns();
         this.addComparisonEventListeners();
         this.setComparisonDefaults();
@@ -20,12 +37,31 @@ class SetupComparison {
     }
 
     populateComparisonDropdowns() {
+        console.log('Populating comparison dropdowns...');
+        
+        // Check if functions are available
+        if (typeof getTransmissionNames !== 'function') {
+            console.error('getTransmissionNames function not available');
+            return;
+        }
+        
+        if (typeof getAxleNames !== 'function') {
+            console.error('getAxleNames function not available');
+            return;
+        }
+
         // Populate transmission dropdowns
         const transmissionA = document.getElementById('setupA_transmission');
         const transmissionB = document.getElementById('setupB_transmission');
         
-        if (transmissionA && transmissionB) {
+        if (!transmissionA || !transmissionB) {
+            console.error('Transmission dropdown elements not found');
+            return;
+        }
+        
+        try {
             const transmissions = getTransmissionNames();
+            console.log(`Found ${transmissions.length} transmissions for comparison`);
             
             transmissions.forEach(transmission => {
                 const optionA = document.createElement('option');
@@ -38,6 +74,9 @@ class SetupComparison {
                 optionB.textContent = transmission;
                 transmissionB.appendChild(optionB);
             });
+        } catch (error) {
+            console.error('Error populating transmission dropdowns:', error);
+            return;
         }
 
         // Populate axle dropdowns
@@ -46,8 +85,14 @@ class SetupComparison {
         const frontAxleB = document.getElementById('setupB_frontAxle');
         const rearAxleB = document.getElementById('setupB_rearAxle');
         
-        if (frontAxleA && rearAxleA && frontAxleB && rearAxleB) {
+        if (!frontAxleA || !rearAxleA || !frontAxleB || !rearAxleB) {
+            console.error('Axle dropdown elements not found');
+            return;
+        }
+        
+        try {
             const axles = getAxleNames();
+            console.log(`Found ${axles.length} axles for comparison`);
             
             axles.forEach(axle => {
                 const frontOptionA = document.createElement('option');
@@ -70,6 +115,10 @@ class SetupComparison {
                 rearOptionB.textContent = axle;
                 rearAxleB.appendChild(rearOptionB);
             });
+            
+            console.log('Comparison dropdowns populated successfully');
+        } catch (error) {
+            console.error('Error populating axle dropdowns:', error);
         }
     }
 
@@ -409,12 +458,27 @@ const setupComparison = new SetupComparison();
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-    // Wait for other scripts to load first
+    // Wait longer for other scripts to load first and main UI to initialize
     setTimeout(() => {
-        if (typeof getTransmissionNames === 'function' && typeof calculator !== 'undefined') {
+        if (typeof getTransmissionNames === 'function' && 
+            typeof calculator !== 'undefined' && 
+            typeof initializeUI === 'function') {
+            console.log('All dependencies available, initializing comparison...');
             setupComparison.initialize();
         } else {
-            console.error('Comparison feature requires data.js and calculator.js to be loaded first');
+            console.error('Comparison feature requires data.js, calculator.js, and ui.js to be loaded first');
+            console.log('Available functions:');
+            console.log('- getTransmissionNames:', typeof getTransmissionNames);
+            console.log('- calculator:', typeof calculator);
+            console.log('- initializeUI:', typeof initializeUI);
+            
+            // Try again after a longer delay
+            setTimeout(() => {
+                if (typeof getTransmissionNames === 'function' && typeof calculator !== 'undefined') {
+                    console.log('Retrying comparison initialization...');
+                    setupComparison.initialize();
+                }
+            }, 2000);
         }
-    }, 1000);
+    }, 1500); // Increased delay to ensure main UI loads first
 });
