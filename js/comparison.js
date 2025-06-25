@@ -747,15 +747,15 @@ class SetupComparison {
                     table {
                         width: 100%;
                         border-collapse: collapse;
-                        margin-bottom: 10px;
-                        font-size: 10px;
+                        margin-bottom: 8px;
+                        font-size: 9px;
                     }
                     
                     .comparison-config-table th,
                     .comparison-config-table td,
                     .comparison-results-table th,
                     .comparison-results-table td {
-                        padding: 8px 6px;
+                        padding: 4px 3px;
                         text-align: left;
                         border-bottom: 1px solid #ddd;
                     }
@@ -765,7 +765,8 @@ class SetupComparison {
                         background: #000;
                         color: white;
                         font-weight: bold;
-                        font-size: 11px;
+                        font-size: 10px;
+                        padding: 6px 3px;
                     }
                     
                     .setup-col {
@@ -844,11 +845,15 @@ class SetupComparison {
                     }
                     
                     @media print {
-                        body { margin: 0; padding: 10px; font-size: 10px; }
-                        .print-header h1 { font-size: 18px; }
-                        .print-section h3 { font-size: 12px; }
-                        table { font-size: 9px; }
-                        th, td { padding: 4px 3px; }
+                        body { margin: 0; padding: 8px; font-size: 9px; }
+                        .print-header h1 { font-size: 15px; }
+                        .print-header h2 { font-size: 12px; }
+                        .print-section h3 { font-size: 11px; }
+                        table { font-size: 8px; margin-bottom: 4px; }
+                        th, td { padding: 2px 2px; }
+                        .print-section { margin-bottom: 10px; }
+                        .summary-section { padding: 6px; }
+                        .summary-content p { font-size: 8px; margin-bottom: 4px; }
                     }
                 </style>
             </head>

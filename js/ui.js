@@ -904,8 +904,9 @@ function printMainCalculator() {
                 }
                 
                 .config-table td {
-                    padding: 8px 12px;
+                    padding: 4px 8px;
                     border-bottom: 1px solid #eee;
+                    font-size: 11px;
                 }
                 
                 .config-table td:first-child {
@@ -917,16 +918,18 @@ function printMainCalculator() {
                 
                 .results-table th,
                 .results-table td {
-                    padding: 10px 15px;
+                    padding: 6px 10px;
                     text-align: left;
                     border-bottom: 1px solid #ddd;
+                    font-size: 11px;
                 }
                 
                 .results-table thead th {
                     background: #000;
                     color: white;
                     font-weight: bold;
-                    font-size: 14px;
+                    font-size: 12px;
+                    padding: 8px 10px;
                 }
                 
                 .results-table tbody tr:nth-child(even) {
@@ -960,10 +963,13 @@ function printMainCalculator() {
                 }
                 
                 @media print {
-                    body { margin: 0; padding: 15px; font-size: 11px; }
-                    .print-header h1 { font-size: 20px; }
-                    .print-section h3 { font-size: 14px; }
-                    .results-table th, .results-table td { padding: 6px 10px; }
+                    body { margin: 0; padding: 10px; font-size: 10px; }
+                    .print-header h1 { font-size: 16px; }
+                    .print-section h3 { font-size: 12px; }
+                    .results-table th, .results-table td { padding: 3px 6px; font-size: 10px; }
+                    .config-table td { padding: 3px 6px; font-size: 10px; }
+                    .print-section { margin-bottom: 12px; }
+                    table { margin-bottom: 6px; }
                 }
             </style>
         </head>
