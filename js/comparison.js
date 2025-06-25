@@ -184,6 +184,63 @@ class SetupComparison {
                 }
             }
         });
+        
+        // Add tire size unit conversion for Setup A
+        this.setupTireSizeConversion('setupA');
+        
+        // Add tire size unit conversion for Setup B
+        this.setupTireSizeConversion('setupB');
+    }
+
+    setupTireSizeConversion(setupPrefix) {
+        const tireSizeUnitEl = document.getElementById(`${setupPrefix}_tireSizeUnit`);
+        const tireSizeEl = document.getElementById(`${setupPrefix}_tireSize`);
+        
+        if (tireSizeUnitEl && tireSizeEl) {
+            // Store the current unit as a data attribute
+            tireSizeUnitEl.dataset.lastUnit = tireSizeUnitEl.value;
+            
+            tireSizeUnitEl.addEventListener('change', function() {
+                const currentUnit = this.value;
+                const lastUnit = this.dataset.lastUnit || 'inches';
+                const currentValue = parseFloat(tireSizeEl.value);
+                
+                console.log(`${setupPrefix} unit change: ${lastUnit} → ${currentUnit}, value: ${currentValue}`);
+                
+                // Only convert if there's a valid value and units are actually different
+                if (currentValue && currentValue > 0 && lastUnit !== currentUnit) {
+                    let convertedValue;
+                    
+                    if (lastUnit === 'inches' && currentUnit === 'mm') {
+                        // Convert inches to mm
+                        convertedValue = currentValue * 25.4;
+                        console.log(`${setupPrefix}: Converting ${currentValue} inches to ${convertedValue.toFixed(2)} mm`);
+                    } else if (lastUnit === 'mm' && currentUnit === 'inches') {
+                        // Convert mm to inches
+                        convertedValue = currentValue / 25.4;
+                        console.log(`${setupPrefix}: Converting ${currentValue} mm to ${convertedValue.toFixed(2)} inches`);
+                    } else {
+                        // No conversion needed
+                        convertedValue = currentValue;
+                        console.log(`${setupPrefix}: No conversion needed, same units: ${currentUnit}`);
+                    }
+                    
+                    // Update the tire size input with converted value
+                    if (convertedValue !== currentValue) {
+                        tireSizeEl.value = convertedValue.toFixed(2);
+                        console.log(`${setupPrefix}: Updated tire size: ${currentValue} ${lastUnit} → ${convertedValue.toFixed(2)} ${currentUnit}`);
+                    }
+                } else {
+                    console.log(`${setupPrefix}: Skipping conversion: value=${currentValue}, lastUnit=${lastUnit}, currentUnit=${currentUnit}`);
+                }
+                
+                // Update last unit for next conversion
+                this.dataset.lastUnit = currentUnit;
+                
+                // Recalculate comparison
+                setTimeout(() => setupComparison.calculateComparison(), 100);
+            });
+        }
     }
 
     toggleComparison() {
