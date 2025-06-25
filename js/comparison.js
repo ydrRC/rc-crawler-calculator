@@ -197,8 +197,11 @@ class SetupComparison {
         const tireSizeEl = document.getElementById(`${setupPrefix}_tireSize`);
         
         if (tireSizeUnitEl && tireSizeEl) {
-            // Store the current unit as a data attribute
-            tireSizeUnitEl.dataset.lastUnit = tireSizeUnitEl.value;
+            // Initialize the lastUnit dataset if it doesn't exist
+            if (!tireSizeUnitEl.dataset.lastUnit) {
+                tireSizeUnitEl.dataset.lastUnit = tireSizeUnitEl.value;
+                console.log(`${setupPrefix}: Initialized lastUnit to ${tireSizeUnitEl.value}`);
+            }
             
             tireSizeUnitEl.addEventListener('change', function() {
                 const currentUnit = this.value;
@@ -281,6 +284,13 @@ class SetupComparison {
         document.getElementById(`${prefix}voltage`).value = currentParams.maxVoltage || '';
         document.getElementById(`${prefix}tireSize`).value = currentParams.tireSize || '';
         document.getElementById(`${prefix}tireSizeUnit`).value = currentParams.tireSizeUnit || 'inches';
+        
+        // IMPORTANT: Update the lastUnit dataset after copying
+        const tireSizeUnitEl = document.getElementById(`${prefix}tireSizeUnit`);
+        if (tireSizeUnitEl) {
+            tireSizeUnitEl.dataset.lastUnit = currentParams.tireSizeUnit || 'inches';
+            console.log(`${prefix}: Set lastUnit to ${currentParams.tireSizeUnit || 'inches'} after copy`);
+        }
         
         // Show feedback
         const button = document.getElementById(`copyCurrentTo${setupLetter}`);
