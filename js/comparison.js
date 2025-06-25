@@ -146,6 +146,20 @@ class SetupComparison {
             const element = document.getElementById(`setupB_${key}`);
             if (element) element.value = value;
         });
+        
+        // Set initial validation ranges for tire sizes
+        const setupATireSize = document.getElementById('setupA_tireSize');
+        const setupATireUnit = document.getElementById('setupA_tireSizeUnit');
+        const setupBTireSize = document.getElementById('setupB_tireSize');
+        const setupBTireUnit = document.getElementById('setupB_tireSizeUnit');
+        
+        if (setupATireSize && setupATireUnit) {
+            this.updateTireSizeValidation(setupATireUnit.value, setupATireSize);
+        }
+        
+        if (setupBTireSize && setupBTireUnit) {
+            this.updateTireSizeValidation(setupBTireUnit.value, setupBTireSize);
+        }
     }
 
     addComparisonEventListeners() {
@@ -254,10 +268,13 @@ class SetupComparison {
         if (unit === 'inches') {
             tireSizeEl.min = '2';
             tireSizeEl.max = '6';
+            console.log(`Updated validation for inches: min=2, max=6`);
         } else if (unit === 'mm') {
             tireSizeEl.min = '50.80';
             tireSizeEl.max = '152.40';
+            console.log(`Updated validation for mm: min=50.80, max=152.40`);
         }
+        console.log(`Tire input ${tireSizeEl.id} validation: min=${tireSizeEl.min}, max=${tireSizeEl.max}`);
     }
 
     toggleComparison() {
