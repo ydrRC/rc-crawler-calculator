@@ -203,6 +203,9 @@ class SetupComparison {
                 console.log(`${setupPrefix}: Initialized lastUnit to ${tireSizeUnitEl.value}`);
             }
             
+            // Set initial validation ranges
+            this.updateTireSizeValidation(tireSizeUnitEl.value, tireSizeEl);
+            
             tireSizeUnitEl.addEventListener('change', function() {
                 const currentUnit = this.value;
                 const lastUnit = this.dataset.lastUnit || 'inches';
@@ -233,9 +236,10 @@ class SetupComparison {
                         tireSizeEl.value = convertedValue.toFixed(2);
                         console.log(`${setupPrefix}: Updated tire size: ${currentValue} ${lastUnit} → ${convertedValue.toFixed(2)} ${currentUnit}`);
                     }
-                } else {
-                    console.log(`${setupPrefix}: Skipping conversion: value=${currentValue}, lastUnit=${lastUnit}, currentUnit=${currentUnit}`);
                 }
+                
+                // Update validation ranges for new unit
+                setupComparison.updateTireSizeValidation(currentUnit, tireSizeEl);
                 
                 // Update last unit for next conversion
                 this.dataset.lastUnit = currentUnit;
@@ -243,6 +247,16 @@ class SetupComparison {
                 // Recalculate comparison
                 setTimeout(() => setupComparison.calculateComparison(), 100);
             });
+        }
+    }
+
+    updateTireSizeValidation(unit, tireSizeEl) {
+        if (unit === 'inches') {
+            tireSizeEl.min = '2';
+            tireSizeEl.max = '6';
+        } else if (unit === 'mm') {
+            tireSizeEl.min = '50.80';
+            tireSizeEl.max = '152.40';
         }
     }
 
