@@ -166,7 +166,10 @@ class SetupComparison {
         // Toggle comparison visibility
         const toggleBtn = document.getElementById('toggleComparison');
         if (toggleBtn) {
+            console.log('Found toggle comparison button, adding listener');
             toggleBtn.addEventListener('click', () => this.toggleComparison());
+        } else {
+            console.error('Toggle comparison button not found!');
         }
 
         // Copy current setup buttons
@@ -175,10 +178,14 @@ class SetupComparison {
         
         if (copyToA) {
             copyToA.addEventListener('click', () => this.copyCurrentSetup('A'));
+        } else {
+            console.error('Copy to A button not found!');
         }
         
         if (copyToB) {
             copyToB.addEventListener('click', () => this.copyCurrentSetup('B'));
+        } else {
+            console.error('Copy to B button not found!');
         }
 
         // Add change listeners to all comparison inputs
@@ -209,6 +216,9 @@ class SetupComparison {
         const printComparisonBtn = document.getElementById('printComparisonBtn');
         if (printComparisonBtn) {
             printComparisonBtn.addEventListener('click', () => this.printComparison());
+            console.log('Print comparison button listener added');
+        } else {
+            console.log('Print comparison button not found (this is normal on page load)');
         }
     }
 
