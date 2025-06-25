@@ -560,21 +560,436 @@ class SetupComparison {
     }
 
     printComparison() {
-        // Add print class to body
-        document.body.classList.add('print-comparison');
+        const paramsA = this.getSetupParameters('A');
+        const paramsB = this.getSetupParameters('B');
+        const resultsA = this.setupA.calculateAll(paramsA);
+        const resultsB = this.setupB.calculateAll(paramsB);
+        const formattedA = this.setupA.getFormattedResults();
+        const formattedB = this.setupB.getFormattedResults();
         
-        // Set document title for print
-        const originalTitle = document.title;
         const setupAName = document.getElementById('setupA_name').value || 'Setup A';
         const setupBName = document.getElementById('setupB_name').value || 'Setup B';
-        document.title = `RC Crawler Calculator - Comparison: ${setupAName} vs ${setupBName}`;
         
-        // Print
-        window.print();
+        // Calculate differences for display
+        const differences = {
+            motorRatio: resultsB.motorRatio - resultsA.motorRatio,
+            frontRatio: resultsB.finalFrontRatio - resultsA.finalFrontRatio,
+            rearRatio: resultsB.finalRearRatio - resultsA.finalRearRatio,
+            overdrive: resultsB.overdrivePercentage - resultsA.overdrivePercentage,
+            frontSpeed: resultsB.frontSpeed - resultsA.frontSpeed,
+            rearSpeed: resultsB.rearSpeed - resultsA.rearSpeed
+        };
+
+        const printContent = `
+        <div class="print-header">
+            <h1>RC Crawler Setup Comparison</h1>
+            <h2>ydrRC Calculator Analysis</h2>
+            <h3>${setupAName} vs ${setupBName}</h3>
+            <p class="print-date">Generated: ${new Date().toLocaleString()}</p>
+        </div>
+
+        <div class="print-section">
+            <h3>Setup Configurations</h3>
+            <table class="comparison-config-table">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th class="setup-col">${setupAName}</th>
+                        <th class="setup-col">${setupBName}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Pinion Gear</td><td>${paramsA.pinionTeeth} teeth</td><td>${paramsB.pinionTeeth} teeth</td></tr>
+                    <tr><td>Spur Gear</td><td>${paramsA.spurTeeth} teeth</td><td>${paramsB.spurTeeth} teeth</td></tr>
+                    <tr><td>Transmission</td><td>${paramsA.transmissionName}</td><td>${paramsB.transmissionName}</td></tr>
+                    <tr><td>Front Axle</td><td>${paramsA.frontAxleName}</td><td>${paramsB.frontAxleName}</td></tr>
+                    <tr><td>Rear Axle</td><td>${paramsA.rearAxleName}</td><td>${paramsB.rearAxleName}</td></tr>
+                    <tr><td>Motor KV</td><td>${paramsA.motorKV || 'Not set'}</td><td>${paramsB.motorKV || 'Not set'}</td></tr>
+                    <tr><td>Voltage</td><td>${paramsA.maxVoltage}V</td><td>${paramsB.maxVoltage}V</td></tr>
+                    <tr><td>Tire Size</td><td>${paramsA.tireSize} ${paramsA.tireSizeUnit}</td><td>${paramsB.tireSize} ${paramsB.tireSizeUnit}</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="print-section">
+            <h3>Performance Comparison</h3>
+            <table class="comparison-results-table">
+                <thead>
+                    <tr>
+                        <th>Measurement</th>
+                        <th class="setup-col">${setupAName}</th>
+                        <th class="setup-col">${setupBName}</th>
+                        <th class="diff-col">Difference</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Motor Ratio</td>
+                        <td class="result-value">${formattedA.motorRatio}</td>
+                        <td class="result-value">${formattedB.motorRatio}</td>
+                        <td class="diff-value ${this.getDifferenceClass(differences.motorRatio)}">${this.formatDifference(differences.motorRatio, 'ratio')}</td>
+                    </tr>
+                    <tr class="highlight">
+                        <td>Final Front Ratio</td>
+                        <td class="result-value">${formattedA.finalFrontRatio}</td>
+                        <td class="result-value">${formattedB.finalFrontRatio}</td>
+                        <td class="diff-value ${this.getDifferenceClass(differences.frontRatio)}">${this.formatDifference(differences.frontRatio, 'ratio')}</td>
+                    </tr>
+                    <tr class="highlight">
+                        <td>Final Rear Ratio</td>
+                        <td class="result-value">${formattedA.finalRearRatio}</td>
+                        <td class="result-value">${formattedB.finalRearRatio}</td>
+                        <td class="diff-value ${this.getDifferenceClass(differences.rearRatio)}">${this.formatDifference(differences.rearRatio, 'ratio')}</td>
+                    </tr>
+                    <tr>
+                        <td>Overdrive %</td>
+                        <td class="result-value">${formattedA.overdrivePercentage}</td>
+                        <td class="result-value">${formattedB.overdrivePercentage}</td>
+                        <td class="diff-value ${this.getDifferenceClass(differences.overdrive)}">${this.formatDifference(differences.overdrive, 'percentage')}</td>
+                    </tr>
+                    <tr class="speed-result">
+                        <td>Front Speed</td>
+                        <td class="result-value">${formattedA.frontSpeed}</td>
+                        <td class="result-value">${formattedB.frontSpeed}</td>
+                        <td class="diff-value ${this.getDifferenceClass(differences.frontSpeed)}">${this.formatDifference(differences.frontSpeed, 'speed')}</td>
+                    </tr>
+                    <tr class="speed-result">
+                        <td>Rear Speed</td>
+                        <td class="result-value">${formattedA.rearSpeed}</td>
+                        <td class="result-value">${formattedB.rearSpeed}</td>
+                        <td class="diff-value ${this.getDifferenceClass(differences.rearSpeed)}">${this.formatDifference(differences.rearSpeed, 'speed')}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="print-section summary-section">
+            <h3>Analysis Summary</h3>
+            <div class="summary-content">
+                ${this.generatePrintSummary(paramsA, paramsB, resultsA, resultsB, setupAName, setupBName)}
+            </div>
+        </div>
+
+        <div class="print-footer">
+            <p>Generated by ydrRC Crawler Calculator</p>
+        </div>
+`;
+
+        // Create a new window for printing
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>RC Crawler Calculator - Comparison: ${setupAName} vs ${setupBName}</title>
+                <style>
+                    * { margin: 0; padding: 0; box-sizing: border-box; }
+                    
+                    body { 
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        font-size: 11px;
+                        line-height: 1.4;
+                        color: #333;
+                        background: white;
+                        padding: 15px;
+                    }
+                    
+                    .print-header {
+                        text-align: center;
+                        border-bottom: 3px solid #000;
+                        padding-bottom: 15px;
+                        margin-bottom: 25px;
+                    }
+                    
+                    .print-header h1 {
+                        font-size: 22px;
+                        font-weight: bold;
+                        color: #000;
+                        margin-bottom: 5px;
+                    }
+                    
+                    .print-header h2 {
+                        font-size: 14px;
+                        color: #666;
+                        font-weight: normal;
+                        margin-bottom: 5px;
+                    }
+                    
+                    .print-header h3 {
+                        font-size: 16px;
+                        color: #000;
+                        font-weight: 600;
+                        margin-bottom: 10px;
+                    }
+                    
+                    .print-date {
+                        font-size: 9px;
+                        color: #888;
+                        font-style: italic;
+                    }
+                    
+                    .print-section {
+                        margin-bottom: 25px;
+                        page-break-inside: avoid;
+                    }
+                    
+                    .print-section h3 {
+                        font-size: 14px;
+                        font-weight: bold;
+                        color: #000;
+                        border-bottom: 2px solid #ccc;
+                        padding-bottom: 5px;
+                        margin-bottom: 15px;
+                    }
+                    
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-bottom: 10px;
+                        font-size: 10px;
+                    }
+                    
+                    .comparison-config-table th,
+                    .comparison-config-table td,
+                    .comparison-results-table th,
+                    .comparison-results-table td {
+                        padding: 8px 6px;
+                        text-align: left;
+                        border-bottom: 1px solid #ddd;
+                    }
+                    
+                    .comparison-config-table thead th,
+                    .comparison-results-table thead th {
+                        background: #000;
+                        color: white;
+                        font-weight: bold;
+                        font-size: 11px;
+                    }
+                    
+                    .setup-col {
+                        background: #e3f2fd !important;
+                        font-weight: 600;
+                    }
+                    
+                    .diff-col {
+                        background: #fff3e0 !important;
+                        font-weight: 600;
+                    }
+                    
+                    .comparison-config-table tbody tr:nth-child(even),
+                    .comparison-results-table tbody tr:nth-child(even) {
+                        background: #f8f9fa;
+                    }
+                    
+                    .comparison-results-table .highlight {
+                        background: #e8f5e8 !important;
+                        font-weight: 600;
+                    }
+                    
+                    .comparison-results-table .speed-result {
+                        background: #f3e5f5 !important;
+                        font-weight: 600;
+                    }
+                    
+                    .result-value {
+                        font-family: 'Courier New', monospace;
+                        font-weight: bold;
+                        text-align: center;
+                    }
+                    
+                    .diff-value {
+                        font-family: 'Courier New', monospace;
+                        font-weight: bold;
+                        text-align: center;
+                    }
+                    
+                    .diff-positive { color: #2e7d32; }
+                    .diff-negative { color: #c62828; }
+                    .diff-neutral { color: #666; }
+                    
+                    .summary-section {
+                        background: #f8f9fa;
+                        border: 2px solid #ddd;
+                        border-radius: 5px;
+                        padding: 15px;
+                    }
+                    
+                    .summary-content {
+                        line-height: 1.6;
+                    }
+                    
+                    .summary-content p {
+                        margin-bottom: 8px;
+                        padding-left: 20px;
+                        position: relative;
+                    }
+                    
+                    .summary-content p:before {
+                        content: "•";
+                        position: absolute;
+                        left: 0;
+                        font-weight: bold;
+                        color: #666;
+                    }
+                    
+                    .print-footer {
+                        text-align: center;
+                        margin-top: 25px;
+                        padding-top: 15px;
+                        border-top: 2px solid #ccc;
+                        font-size: 9px;
+                        color: #888;
+                    }
+                    
+                    @media print {
+                        body { margin: 0; padding: 10px; font-size: 10px; }
+                        .print-header h1 { font-size: 18px; }
+                        .print-section h3 { font-size: 12px; }
+                        table { font-size: 9px; }
+                        th, td { padding: 4px 3px; }
+                    }
+                </style>
+            </head>
+            <body>${printContent}</body>
+            </html>
+        `);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+    }
+
+    getDifferenceClass(difference) {
+        if (!isFinite(difference) || Math.abs(difference) < 0.001) {
+            return 'diff-neutral';
+        }
+        return difference > 0 ? 'diff-positive' : 'diff-negative';
+    }(0,13).padEnd(13)} | ${setupBName.substring(0,13).padEnd(13)} | Difference       |
++------------------------+---------------+---------------+------------------+
+| Motor Ratio            | ${formattedA.motorRatio.replace(':1','').padEnd(13)} | ${formattedB.motorRatio.replace(':1','').padEnd(13)} | ${this.formatDifference(differences.motorRatio, 'ratio').padEnd(16)} |
+| Final Front Ratio      | ${formattedA.finalFrontRatio.replace(':1','').padEnd(13)} | ${formattedB.finalFrontRatio.replace(':1','').padEnd(13)} | ${this.formatDifference(differences.frontRatio, 'ratio').padEnd(16)} |
+| Final Rear Ratio       | ${formattedA.finalRearRatio.replace(':1','').padEnd(13)} | ${formattedB.finalRearRatio.replace(':1','').padEnd(13)} | ${this.formatDifference(differences.rearRatio, 'ratio').padEnd(16)} |
+| Overdrive %            | ${formattedA.overdrivePercentage.padEnd(13)} | ${formattedB.overdrivePercentage.padEnd(13)} | ${this.formatDifference(differences.overdrive, 'percentage').padEnd(16)} |
+| Front Speed            | ${formattedA.frontSpeed.replace(' MPH (', ' MPH\\n(').split('\\n')[0].padEnd(13)} | ${formattedB.frontSpeed.replace(' MPH (', ' MPH\\n(').split('\\n')[0].padEnd(13)} | ${this.formatDifference(differences.frontSpeed, 'speed').padEnd(16)} |
+| Rear Speed             | ${formattedA.rearSpeed.replace(' MPH (', ' MPH\\n(').split('\\n')[0].padEnd(13)} | ${formattedB.rearSpeed.replace(' MPH (', ' MPH\\n(').split('\\n')[0].padEnd(13)} | ${this.formatDifference(differences.rearSpeed, 'speed').padEnd(16)} |
++------------------------+---------------+---------------+------------------+
+
+SUMMARY:
+${this.generatePrintSummary(paramsA, paramsB, resultsA, resultsB, setupAName, setupBName)}
+
+================================================================================
+                              Generated by ydrRC Calculator
+================================================================================
+`;
+
+        // Create a new window for printing
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+            <head>
+                <title>RC Crawler Calculator - Comparison: ${setupAName} vs ${setupBName}</title>
+                <style>
+                    body { 
+                        font-family: 'Courier New', monospace; 
+                        font-size: 9px; 
+                        margin: 0.5in; 
+                        line-height: 1.1;
+                        white-space: pre;
+                    }
+                    @media print {
+                        body { margin: 0.25in; font-size: 8px; }
+                    }
+                </style>
+            </head>
+            <body>${printContent}</body>
+            </html>
+        `);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+    }
+
+    formatDifference(difference, type) {
+        if (!isFinite(difference) || Math.abs(difference) < 0.001) {
+            return '-';
+        }
+
+        const sign = difference > 0 ? '+' : '';
         
-        // Restore original state
-        document.body.classList.remove('print-comparison');
-        document.title = originalTitle;
+        switch (type) {
+            case 'ratio':
+                return `${sign}${difference.toFixed(3)}`;
+            case 'percentage':
+                return `${sign}${difference.toFixed(2)}%`;
+            case 'speed':
+                return `${sign}${difference.toFixed(2)} MPH`;
+            default:
+                return `${sign}${difference.toFixed(2)}`;
+        }
+    }
+
+    generatePrintSummary(paramsA, paramsB, resultsA, resultsB, setupAName, setupBName) {
+        let summary = [];
+
+        // Speed comparison
+        if (resultsA.rearSpeed && resultsB.rearSpeed) {
+            const speedDiff = resultsB.rearSpeed - resultsA.rearSpeed;
+            if (Math.abs(speedDiff) > 0.5) {
+                const faster = speedDiff > 0 ? setupBName : setupAName;
+                const slower = speedDiff > 0 ? setupAName : setupBName;
+                const speedDiffKMH = mphToKmh(Math.abs(speedDiff));
+                summary.push(`<p><strong>${faster}</strong> is ${Math.abs(speedDiff).toFixed(1)} MPH (${speedDiffKMH.toFixed(1)} KM/H) faster than ${slower}</p>`);
+            }
+        }
+
+        // Gear ratio comparison
+        const ratioA = resultsA.finalRearRatio;
+        const ratioB = resultsB.finalRearRatio;
+        if (ratioA && ratioB) {
+            const ratioDiff = ratioB - ratioA;
+            if (Math.abs(ratioDiff) > 1) {
+                const higher = ratioDiff > 0 ? setupBName : setupAName;
+                summary.push(`<p><strong>${higher}</strong> has ${Math.abs(ratioDiff).toFixed(1)} higher gear ratio (more torque, less speed)</p>`);
+            }
+        }
+
+        // Overdrive analysis
+        const overdriveA = resultsA.overdrivePercentage;
+        const overdriveB = resultsB.overdrivePercentage;
+        if (isFinite(overdriveA) && isFinite(overdriveB)) {
+            if (overdriveA < 0 && overdriveB >= 0) {
+                summary.push(`<p><strong>${setupBName}</strong> fixes the negative overdrive issue from ${setupAName}</p>`);
+            } else if (overdriveB < 0 && overdriveA >= 0) {
+                summary.push(`<p><strong>Warning:</strong> ${setupBName} creates negative overdrive (rear faster than front)</p>`);
+            }
+        }
+
+        // Use case recommendations
+        if (ratioA && ratioB && resultsA.rearSpeed && resultsB.rearSpeed) {
+            const avgRatioA = (resultsA.finalFrontRatio + resultsA.finalRearRatio) / 2;
+            const avgRatioB = (resultsB.finalFrontRatio + resultsB.finalRearRatio) / 2;
+
+            if (avgRatioA > 50 && avgRatioB < 30) {
+                summary.push(`<p><strong>Recommendation:</strong> ${setupAName} is better for technical crawling, ${setupBName} is better for speed and trail running</p>`);
+            } else if (avgRatioB > 50 && avgRatioA < 30) {
+                summary.push(`<p><strong>Recommendation:</strong> ${setupBName} is better for technical crawling, ${setupAName} is better for speed and trail running</p>`);
+            }
+        }
+
+        // Motor stress analysis
+        if (resultsA.motorRatio && resultsB.motorRatio) {
+            if (resultsA.motorRatio < 2.5 || resultsB.motorRatio < 2.5) {
+                const lowRatio = resultsA.motorRatio < resultsB.motorRatio ? setupAName : setupBName;
+                summary.push(`<p><strong>Warning:</strong> ${lowRatio} has a low motor ratio (${resultsA.motorRatio < resultsB.motorRatio ? resultsA.motorRatio.toFixed(2) : resultsB.motorRatio.toFixed(2)}) that may stress the motor</p>`);
+            }
+        }
+
+        if (summary.length === 0) {
+            summary.push('<p>Both setups are properly configured and ready for comparison. Review the performance differences in the table above.</p>');
+        }
+
+        return summary.join('');
     }
 }
 
