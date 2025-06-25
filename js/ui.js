@@ -131,6 +131,11 @@ function addEventListeners() {
         importFile.addEventListener('change', handleImportFile);
     }
     
+    const printMainBtn = document.getElementById('printMainBtn');
+    if (printMainBtn) {
+        printMainBtn.addEventListener('click', printMainCalculator);
+    }
+    
     setupVoltagePresetListener();
     setupResultClickListeners();
     
@@ -754,6 +759,22 @@ function showImportFeedback(message, type) {
 function showErrorMessage(message) {
     console.error(message);
     showImportFeedback(message, 'error');
+}
+
+function printMainCalculator() {
+    // Add print class to body
+    document.body.classList.add('print-main');
+    
+    // Set document title for print
+    const originalTitle = document.title;
+    document.title = 'RC Crawler Calculator - Results';
+    
+    // Print
+    window.print();
+    
+    // Restore original state
+    document.body.classList.remove('print-main');
+    document.title = originalTitle;
 }
 
 document.addEventListener('DOMContentLoaded', function() {

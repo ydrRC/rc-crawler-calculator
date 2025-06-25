@@ -204,6 +204,12 @@ class SetupComparison {
         
         // Add tire size unit conversion for Setup B
         this.setupTireSizeConversion('setupB');
+        
+        // Add print comparison button listener
+        const printComparisonBtn = document.getElementById('printComparisonBtn');
+        if (printComparisonBtn) {
+            printComparisonBtn.addEventListener('click', () => this.printComparison());
+        }
     }
 
     setupTireSizeConversion(setupPrefix) {
@@ -280,6 +286,7 @@ class SetupComparison {
     toggleComparison() {
         const content = document.getElementById('comparisonContent');
         const toggleBtn = document.getElementById('toggleComparison');
+        const printBtn = document.getElementById('printComparisonBtn');
         
         if (!content || !toggleBtn) {
             console.error('Comparison elements not found');
@@ -291,11 +298,13 @@ class SetupComparison {
         if (this.isVisible) {
             content.style.display = 'block';
             toggleBtn.textContent = 'Hide Comparison';
+            if (printBtn) printBtn.style.display = 'inline-block';
             console.log('Comparison tool opened');
             setTimeout(() => this.calculateComparison(), 100);
         } else {
             content.style.display = 'none';
             toggleBtn.textContent = 'Show Comparison';
+            if (printBtn) printBtn.style.display = 'none';
             console.log('Comparison tool closed');
         }
     }
@@ -548,6 +557,24 @@ class SetupComparison {
     debounceComparisonCalculation() {
         clearTimeout(this.comparisonDebounceTimer);
         this.comparisonDebounceTimer = setTimeout(() => this.calculateComparison(), 300);
+    }
+
+    printComparison() {
+        // Add print class to body
+        document.body.classList.add('print-comparison');
+        
+        // Set document title for print
+        const originalTitle = document.title;
+        const setupAName = document.getElementById('setupA_name').value || 'Setup A';
+        const setupBName = document.getElementById('setupB_name').value || 'Setup B';
+        document.title = `RC Crawler Calculator - Comparison: ${setupAName} vs ${setupBName}`;
+        
+        // Print
+        window.print();
+        
+        // Restore original state
+        document.body.classList.remove('print-comparison');
+        document.title = originalTitle;
     }
 }
 

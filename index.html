@@ -110,6 +110,7 @@
                     <button type="button" id="exportBtn" class="action-btn">Export Configuration</button>
                     <label for="importFile" class="action-btn">Import Configuration</label>
                     <input type="file" id="importFile" accept=".txt,.asc" style="display: none;">
+                    <button type="button" id="printMainBtn" class="action-btn">Print Results</button>
                 </div>
             </section>
             
@@ -170,7 +171,10 @@
             <div class="comparison-header">
                 <h2>Setup Comparison Tool</h2>
                 <p>Compare two different gear configurations side-by-side</p>
-                <button id="toggleComparison" class="action-btn">Show Comparison</button>
+                <div class="comparison-header-buttons">
+                    <button id="toggleComparison" class="action-btn">Show Comparison</button>
+                    <button type="button" id="printComparisonBtn" class="action-btn" style="display: none;">Print Comparison</button>
+                </div>
             </div>
             
             <div id="comparisonContent" class="comparison-content" style="display: none;">

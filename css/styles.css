@@ -984,6 +984,13 @@ body {
     }
 }
 
+.comparison-header-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
 /* Print Styles */
 @media print {
     body {
@@ -1007,11 +1014,59 @@ body {
         -webkit-print-color-adjust: exact;
     }
     
-    .input-section {
-        display: none;
+    /* Hide elements when printing main calculator */
+    .print-main .comparison-section,
+    .print-main .notes-section,
+    .print-main .footer {
+        display: none !important;
     }
     
-    .comparison-section {
-        display: none;
+    .print-main .import-export-buttons {
+        display: none !important;
+    }
+    
+    /* Hide elements when printing comparison */
+    .print-comparison .input-section,
+    .print-comparison .results-section,
+    .print-comparison .notes-section,
+    .print-comparison .footer {
+        display: none !important;
+    }
+    
+    .print-comparison .comparison-header {
+        display: none !important;
+    }
+    
+    .print-comparison .comparison-section {
+        padding: 20px !important;
+        background: white !important;
+    }
+    
+    .print-comparison .comparison-results {
+        background: white !important;
+        border: 2px solid #000000 !important;
+    }
+    
+    .print-comparison .comparison-setup {
+        background: white !important;
+        border: 2px solid #000000 !important;
+    }
+    
+    /* Print page breaks */
+    .comparison-results {
+        page-break-before: always;
+    }
+    
+    /* Print-specific text sizes */
+    @page {
+        margin: 0.5in;
+    }
+    
+    h1, h2, h3 {
+        color: #000000 !important;
+    }
+    
+    .result-item .value {
+        font-size: 1.5em !important;
     }
 }
