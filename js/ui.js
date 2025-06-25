@@ -783,8 +783,7 @@ function printMainCalculator() {
     
     const printContent = `
         <div class="print-header">
-            <h1>RC Crawler Gear Ratio Calculator</h1>
-            <h2>ydrRC Calculator Results</h2>
+            <h1>RC Crawler Calculator Results</h1>
             <p class="print-date">Generated: ${new Date().toLocaleString()}</p>
         </div>
 

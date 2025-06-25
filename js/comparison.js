@@ -593,8 +593,7 @@ class SetupComparison {
         const printContent = `
         <div class="print-header">
             <h1>RC Crawler Setup Comparison</h1>
-            <h2>ydrRC Calculator Analysis</h2>
-            <h3>${setupAName} vs ${setupBName}</h3>
+            <h2>${setupAName} vs ${setupBName}</h2>
             <p class="print-date">Generated: ${new Date().toLocaleString()}</p>
         </div>
 
@@ -706,13 +705,13 @@ class SetupComparison {
                     
                     .print-header {
                         text-align: center;
-                        border-bottom: 3px solid #000;
-                        padding-bottom: 15px;
-                        margin-bottom: 25px;
+                        border-bottom: 2px solid #000;
+                        padding-bottom: 10px;
+                        margin-bottom: 20px;
                     }
                     
                     .print-header h1 {
-                        font-size: 22px;
+                        font-size: 18px;
                         font-weight: bold;
                         color: #000;
                         margin-bottom: 5px;
@@ -720,16 +719,9 @@ class SetupComparison {
                     
                     .print-header h2 {
                         font-size: 14px;
-                        color: #666;
-                        font-weight: normal;
-                        margin-bottom: 5px;
-                    }
-                    
-                    .print-header h3 {
-                        font-size: 16px;
                         color: #000;
                         font-weight: 600;
-                        margin-bottom: 10px;
+                        margin-bottom: 8px;
                     }
                     
                     .print-date {
@@ -739,17 +731,17 @@ class SetupComparison {
                     }
                     
                     .print-section {
-                        margin-bottom: 25px;
+                        margin-bottom: 20px;
                         page-break-inside: avoid;
                     }
                     
                     .print-section h3 {
-                        font-size: 14px;
+                        font-size: 13px;
                         font-weight: bold;
                         color: #000;
-                        border-bottom: 2px solid #ccc;
-                        padding-bottom: 5px;
-                        margin-bottom: 15px;
+                        border-bottom: 1px solid #ccc;
+                        padding-bottom: 4px;
+                        margin-bottom: 12px;
                     }
                     
                     table {
