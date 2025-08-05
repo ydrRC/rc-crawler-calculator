@@ -6,10 +6,10 @@
 // Application version configuration
 const APP_VERSION = {
     major: 2,
-    minor: 2,
+    minor: 3,
     patch: 0,
-    build: 'June 2025',
-    releaseDate: '2025-06-24',
+    build: 'August 2025',
+    releaseDate: '2025-08-05',
     
     // Computed properties
     get full() {
@@ -32,6 +32,12 @@ const APP_VERSION = {
 // Version history for tracking changes
 const VERSION_HISTORY = [
     {
+        version: '2.3.0',
+        date: '2025-08-05',
+        changes: [
+            'Added more axles and transmissions'          
+        ]
+    },{
         version: '2.2.0',
         date: '2025-06-24',
         changes: [
