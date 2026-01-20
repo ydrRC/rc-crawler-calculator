@@ -40,10 +40,6 @@
             <section class="input-section">
                 <h2>Scale Converter</h2>
                 
-                <div style="margin-bottom: 30px;">
-                    <a href="index.html" style="display: inline-block; color: #000; text-decoration: none; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; font-size: 0.9em; border-bottom: 2px solid #000; padding-bottom: 5px; transition: all 0.3s;">← Back to Gear Ratio Calculator</a>
-                </div>
-                
                 <p style="margin-bottom: 30px; color: #495057; line-height: 1.6;">
                     Select your current scale and target scale to calculate the multiplier needed to convert measurements between different model scales.
                 </p>
@@ -151,7 +147,7 @@
 
                 <p><strong>Tip:</strong> Click on the multiplier result box to copy it to your clipboard!</p>
                 
-                <p>If you have any questions or suggestions, please contact me at <a href="mailto:jeff@ydrRC.com">jeff@ydrRC.com</a></p>
+                <p>If you have any questions or suggestions, please contact me at <a href="/cdn-cgi/l/email-protection#573d323131172e332505147934383a"><span class="__cf_email__" data-cfemail="dab0bfbcbc9aa3bea88899f4b9b5b7">[email&#160;protected]</span></a></p>
             </div>
         </section>
         
@@ -172,7 +168,7 @@
         </footer>
     </div>
 
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         // Scale Converter Functions
         function convertScale() {
             const fromScale = parseFloat(document.getElementById('fromScale').value);
@@ -205,11 +201,11 @@
 
         // Copy result to clipboard
         function copyToClipboard(element) {
-            const h3 = element.querySelector('h3');
             const value = element.querySelector('.value');
             
-            if (h3 && value) {
-                const text = `${h3.textContent}: ${value.textContent}`;
+            if (value) {
+                // Remove the × symbol and copy just the number
+                const text = value.textContent.replace('×', '');
                 
                 navigator.clipboard.writeText(text).then(() => {
                     // Visual feedback
@@ -230,13 +226,4 @@
             const toScaleEl = document.getElementById('toScale');
             
             if (fromScaleEl && toScaleEl) {
-                fromScaleEl.addEventListener('change', convertScale);
-                toScaleEl.addEventListener('change', convertScale);
-                
-                // Initial calculation
-                convertScale();
-            }
-        });
-    </script>
-</body>
-</html>
+                fromScaleEl.addEventListener('cha
