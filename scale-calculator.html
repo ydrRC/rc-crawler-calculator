@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scale Model Converter - ydrRC</title>
+    <meta name="description" content="Professional scale model converter calculator">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-brand">
+                <a href="https://www.ydrRC.com" target="_blank">
+                    <img src="images/ydrRC_Logo.png" 
+                         alt="ydrRC Logo" 
+                         class="brand-logo">
+                </a>
+                <div class="header-text">
+                    <h1>Scale Model Converter</h1>
+                    <p>Calculate the multiplier needed to convert measurements between different model scales</p>
+                </div>
+            </div>
+        </header>
+        
+        <main class="content">
+            <section class="input-section">
+                <h2>Scale Converter</h2>
+                
+                <div style="margin-bottom: 30px;">
+                    <a href="index.html" style="display: inline-block; color: #000; text-decoration: none; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; font-size: 0.9em; border-bottom: 2px solid #000; padding-bottom: 5px; transition: all 0.3s;">← Back to Gear Ratio Calculator</a>
+                </div>
+                
+                <p style="margin-bottom: 30px; color: #495057; line-height: 1.6;">
+                    Select your current scale and target scale to calculate the multiplier needed to convert measurements between different model scales.
+                </p>
+                
+                <div class="input-group">
+                    <label for="fromScale">From Scale:</label>
+                    <select id="fromScale">
+                        <option value="5">1:5</option>
+                        <option value="6">1:6</option>
+                        <option value="8">1:8</option>
+                        <option value="10">1:10</option>
+                        <option value="12">1:12</option>
+                        <option value="14">1:14</option>
+                        <option value="16">1:16</option>
+                        <option value="18">1:18</option>
+                        <option value="22.5">1:22.5 (G gauge)</option>
+                        <option value="24" selected>1:24</option>
+                        <option value="25">1:25</option>
+                        <option value="30">1:30</option>
+                        <option value="32">1:32 (1 gauge)</option>
+                        <option value="43">1:43 (O gauge)</option>
+                        <option value="48">1:48 (O scale)</option>
+                        <option value="64">1:64 (S scale)</option>
+                        <option value="87">1:87 (HO scale)</option>
+                        <option value="160">1:160 (N scale)</option>
+                        <option value="220">1:220 (Z scale)</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label for="toScale">To Scale:</label>
+                    <select id="toScale">
+                        <option value="5">1:5</option>
+                        <option value="6">1:6</option>
+                        <option value="8">1:8</option>
+                        <option value="10">1:10</option>
+                        <option value="12">1:12</option>
+                        <option value="14">1:14</option>
+                        <option value="16">1:16</option>
+                        <option value="18">1:18</option>
+                        <option value="22.5">1:22.5 (G gauge)</option>
+                        <option value="24">1:24</option>
+                        <option value="25">1:25</option>
+                        <option value="30">1:30</option>
+                        <option value="32">1:32 (1 gauge)</option>
+                        <option value="43">1:43 (O gauge)</option>
+                        <option value="48">1:48 (O scale)</option>
+                        <option value="64" selected>1:64 (S scale)</option>
+                        <option value="87">1:87 (HO scale)</option>
+                        <option value="160">1:160 (N scale)</option>
+                        <option value="220">1:220 (Z scale)</option>
+                    </select>
+                </div>
+            </section>
+            
+            <section class="results-section">
+                <h2>Result</h2>
+                
+                <div class="result-item clickable" onclick="copyToClipboard(this)" title="Click to copy">
+                    <h3>Scale Multiplier</h3>
+                    <div class="value" id="scaleMultiplier">×0.3750</div>
+                </div>
+                
+                <div class="result-item">
+                    <div id="scaleDetails" style="font-size: 1.1em; line-height: 1.8;">
+                        Converting from <strong>1:24</strong> to <strong>1:64</strong><br>
+                        Scale down to <strong>37.50%</strong><br>
+                        Multiply all measurements by <strong>0.3750</strong>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <section class="notes-section">
+            <h2>How to Use</h2>
+            <div class="notes-content">
+                <p><strong>The scale multiplier tells you what to multiply your measurements by when converting between scales.</strong></p>
+                
+                <p>For example, if you have a part that's 10mm in 1:24 scale and want to know what size it should be in 1:64 scale:</p>
+                <p style="padding-left: 50px;">
+                    • Select 1:24 as your "From Scale"<br>
+                    • Select 1:64 as your "To Scale"<br>
+                    • The multiplier shows ×0.3750<br>
+                    • Calculate: 10mm × 0.3750 = 3.75mm
+                </p>
+                
+                <p><strong>Understanding the Results:</strong></p>
+                <p style="padding-left: 50px;">
+                    • <strong>Multiplier greater than 1:</strong> You're scaling UP (making things larger)<br>
+                    • <strong>Multiplier less than 1:</strong> You're scaling DOWN (making things smaller)<br>
+                    • <strong>Multiplier equals 1:</strong> Same scale, no conversion needed
+                </p>
+
+                <p><strong>Railroad Gauge Information:</strong></p>
+                <p style="padding-left: 50px;">
+                    • <strong>G gauge (1:22.5):</strong> Large garden railroad scale<br>
+                    • <strong>1 gauge (1:32):</strong> Indoor/outdoor garden railroad<br>
+                    • <strong>O gauge (1:43):</strong> Traditional O scale trains<br>
+                    • <strong>O scale (1:48):</strong> Scale O trains<br>
+                    • <strong>S scale (1:64):</strong> American Flyer trains<br>
+                    • <strong>HO scale (1:87):</strong> Most popular model railroad scale<br>
+                    • <strong>N scale (1:160):</strong> Compact model railroad scale<br>
+                    • <strong>Z scale (1:220):</strong> Smallest commercial model railroad scale
+                </p>
+
+                <p><strong>Tip:</strong> Click on the multiplier result box to copy it to your clipboard!</p>
+                
+                <p>If you have any questions or suggestions, please contact me at <a href="mailto:jeff@ydrRC.com">jeff@ydrRC.com</a></p>
+            </div>
+        </section>
+        
+        <footer class="footer">
+            <a href="https://www.ydrRC.com" target="_blank">
+                <img src="images/YDR.png" 
+                     alt="You're Damn Right Logo" 
+                     class="footer-logo">
+            </a>
+            <div class="footer-content">
+                <p>&copy; 2025 <span class="ydrrc-text"></span> Scale Model Converter. Licensed under CC BY-NC-SA 4.0</p>
+                <div class="version-info">
+                    <span class="version-label">Version</span>
+                    <span class="version-number">1.0.0</span>
+                    <span class="version-date">Build: January 2025</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Scale Converter Functions
+        function convertScale() {
+            const fromScale = parseFloat(document.getElementById('fromScale').value);
+            const toScale = parseFloat(document.getElementById('toScale').value);
+            const multiplierEl = document.getElementById('scaleMultiplier');
+            const detailsEl = document.getElementById('scaleDetails');
+
+            // Calculate the multiplier
+            const multiplier = fromScale / toScale;
+            const percentage = (multiplier * 100).toFixed(2);
+            
+            multiplierEl.textContent = `×${multiplier.toFixed(4)}`;
+            
+            let explanation = '';
+            if (multiplier > 1) {
+                explanation = `Scale up by <strong>${percentage}%</strong><br>`;
+                explanation += `Multiply all measurements by <strong>${multiplier.toFixed(4)}</strong>`;
+            } else if (multiplier < 1) {
+                explanation = `Scale down to <strong>${percentage}%</strong><br>`;
+                explanation += `Multiply all measurements by <strong>${multiplier.toFixed(4)}</strong>`;
+            } else {
+                explanation = `Same scale - no conversion needed`;
+            }
+            
+            detailsEl.innerHTML = `
+                Converting from <strong>1:${fromScale}</strong> to <strong>1:${toScale}</strong><br>
+                ${explanation}
+            `;
+        }
+
+        // Copy result to clipboard
+        function copyToClipboard(element) {
+            const h3 = element.querySelector('h3');
+            const value = element.querySelector('.value');
+            
+            if (h3 && value) {
+                const text = `${h3.textContent}: ${value.textContent}`;
+                
+                navigator.clipboard.writeText(text).then(() => {
+                    // Visual feedback
+                    element.classList.add('copied');
+                    
+                    setTimeout(() => {
+                        element.classList.remove('copied');
+                    }, 600);
+                }).catch(err => {
+                    console.error('Failed to copy:', err);
+                });
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const fromScaleEl = document.getElementById('fromScale');
+            const toScaleEl = document.getElementById('toScale');
+            
+            if (fromScaleEl && toScaleEl) {
+                fromScaleEl.addEventListener('change', convertScale);
+                toScaleEl.addEventListener('change', convertScale);
+                
+                // Initial calculation
+                convertScale();
+            }
+        });
+    </script>
+</body>
+</html>
