@@ -226,4 +226,13 @@
             const toScaleEl = document.getElementById('toScale');
             
             if (fromScaleEl && toScaleEl) {
-                fromScaleEl.addEventListener('cha
+                fromScaleEl.addEventListener('change', convertScale);
+                toScaleEl.addEventListener('change', convertScale);
+                
+                // Initial calculation
+                convertScale();
+            }
+        });
+    </script>
+</body>
+</html>
