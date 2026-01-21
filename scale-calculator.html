@@ -106,30 +106,60 @@
                 
                 <div class="result-item clickable" onclick="copyToClipboard(this)" title="Click to copy">
                     <h3>Scale Multiplier</h3>
-                    <div class="value" id="scaleMultiplier">×0.3750</div>
+                    <div class="value" id="scaleMultiplier">×0.4167</div>
                 </div>
                 
                 <div class="result-item">
                     <div id="scaleDetails" style="font-size: 1.1em; line-height: 1.8;">
-                        Converting from <strong>1:24</strong> to <strong>1:64</strong><br>
-                        Scale down to <strong>37.50%</strong><br>
-                        Multiply all measurements by <strong>0.3750</strong>
+                        Converting from <strong>1:10</strong> to <strong>1:24</strong><br>
+                        Scale down to <strong>41.67%</strong><br>
+                        Multiply all measurements by <strong>0.4167</strong>
                     </div>
                 </div>
             </section>
         </main>
+        
+        <section class="notes-section" style="border-bottom: 3px solid #000000;">
+            <h2>Measurement Converter</h2>
+            <div class="notes-content">
+                <p style="padding-left: 0;"><strong>Enter a measurement to see it converted between your selected scales.</strong></p>
+                
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin: 20px 0; max-width: 600px;">
+                    <div class="input-group" style="margin-bottom: 0;">
+                        <label for="measurementInput">Measurement:</label>
+                        <input type="number" id="measurementInput" step="0.01" min="0" placeholder="Enter measurement" style="border: 2px solid #000000; padding: 15px; font-family: 'Comfortaa', inherit; font-size: 16px;">
+                    </div>
+                    
+                    <div class="input-group" style="margin-bottom: 0;">
+                        <label for="unitSelect">Unit:</label>
+                        <select id="unitSelect" style="border: 2px solid #000000; padding: 15px; font-family: 'Comfortaa', inherit; font-size: 16px; background: white;">
+                            <option value="mm">mm</option>
+                            <option value="cm">cm</option>
+                            <option value="inches" selected>inches</option>
+                            <option value="feet">feet</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="conversionResult" style="background: #f8f9fa; border: 2px solid #000000; padding: 20px; margin: 20px 0; display: none;">
+                    <p style="padding-left: 0; margin: 0; font-size: 1.2em; line-height: 1.8;">
+                        <strong id="resultText"></strong>
+                    </p>
+                </div>
+            </div>
+        </section>
         
         <section class="notes-section">
             <h2>How to Use</h2>
             <div class="notes-content">
                 <p><strong>The scale multiplier tells you what to multiply your measurements by when converting between scales.</strong></p>
                 
-                <p>For example, if you have a part that's 10mm in 1:24 scale and want to know what size it should be in 1:64 scale:</p>
+                <p>For example, if you have a part that's 10mm in 1:10 scale and want to know what size it should be in 1:24 scale:</p>
                 <p style="padding-left: 50px;">
-                    • Select 1:24 as your "From Scale"<br>
-                    • Select 1:64 as your "To Scale"<br>
-                    • The multiplier shows ×0.3750<br>
-                    • Calculate: 10mm × 0.3750 = 3.75mm
+                    • Select 1:10 as your "From Scale"<br>
+                    • Select 1:24 as your "To Scale"<br>
+                    • The multiplier shows ×0.4167<br>
+                    • Calculate: 10mm × 0.4167 = 4.167mm
                 </p>
                 
                 <p><strong>Understanding the Results:</strong></p>
@@ -141,8 +171,8 @@
 
                 <p><strong>Railroad Gauge Information:</strong></p>
                 <p style="padding-left: 50px;">
-                    • <strong>G gauge (1:22.5):</strong> Large garden railroad scale<br>
-                    • <strong>O gauge (1:43.5):</strong> Scale O trains in the United Kingdom and France<br>
+                    • <strong>G scale (1:22.5):</strong> Large garden railroad scale<br>
+                    • <strong>O scale (1:43.5):</strong> Scale O trains in the United Kingdom and France<br>
                     • <strong>O scale (1:45):</strong> Scale O trains in Germany, Japan, and Russia<br>
 					• <strong>O scale (1:48):</strong> Scale O trains in the United States<br>
                     • <strong>S scale (1:64):</strong> American Flyer trains<br>
@@ -226,17 +256,61 @@
             }
         }
 
+        // Convert specific measurement
+        function convertMeasurement() {
+            const measurementInput = document.getElementById('measurementInput');
+            const unitSelect = document.getElementById('unitSelect');
+            const conversionResult = document.getElementById('conversionResult');
+            const resultText = document.getElementById('resultText');
+            
+            const measurement = parseFloat(measurementInput.value);
+            
+            if (isNaN(measurement) || measurement <= 0) {
+                conversionResult.style.display = 'none';
+                return;
+            }
+            
+            const unit = unitSelect.value;
+            const fromScale = parseFloat(document.getElementById('fromScale').value);
+            const toScale = parseFloat(document.getElementById('toScale').value);
+            const multiplier = fromScale / toScale;
+            
+            const convertedMeasurement = (measurement * multiplier).toFixed(4);
+            
+            resultText.innerHTML = `
+                <span style="color: #000;">${measurement} ${unit}</span> at 
+                <span style="color: #000;">1:${fromScale}</span> = 
+                <span style="color: #dc3545; font-weight: 700;">${convertedMeasurement} ${unit}</span> at 
+                <span style="color: #000;">1:${toScale}</span>
+            `;
+            
+            conversionResult.style.display = 'block';
+        }
+
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
             const fromScaleEl = document.getElementById('fromScale');
             const toScaleEl = document.getElementById('toScale');
+            const measurementInput = document.getElementById('measurementInput');
+            const unitSelect = document.getElementById('unitSelect');
             
             if (fromScaleEl && toScaleEl) {
-                fromScaleEl.addEventListener('change', convertScale);
-                toScaleEl.addEventListener('change', convertScale);
+                fromScaleEl.addEventListener('change', function() {
+                    convertScale();
+                    convertMeasurement();
+                });
+                toScaleEl.addEventListener('change', function() {
+                    convertScale();
+                    convertMeasurement();
+                });
                 
                 // Initial calculation
                 convertScale();
+            }
+            
+            if (measurementInput && unitSelect) {
+                measurementInput.addEventListener('input', convertMeasurement);
+                unitSelect.addEventListener('change', convertMeasurement);
             }
         });
     </script>
